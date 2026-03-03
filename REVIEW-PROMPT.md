@@ -28,11 +28,18 @@ Calculate question distribution:
 - Reduce domains with 0 wrong answers by 0.8x
 - Normalize to 100%, distribute 40 questions accordingly
 
+Apply difficulty tiers from CONFIG.md:
+- Read `difficulty_mode` and `difficulty_distribution`
+- For strong domains (80%+ accuracy): push questions one tier harder (e.g., Professional → Expert)
+- For weak domains (<70% accuracy): keep at current tier or drop one tier to reinforce fundamentals
+- Associate = recall/identification, Professional = scenario-based analysis, Expert = synthesis with competing priorities
+- In mixed mode, distribute per CONFIG percentages (default 20% Associate / 60% Professional / 20% Expert)
+
 Source questions by priority: configured materials → transcripts → training knowledge. Vary types: definition, scenario, best practice, comparison, multi-step reasoning.
 
 ### QUIZ FORMAT
 
-Present one question at a time: "Question [n]/40 | Domain [x] | [Difficulty]"
+Present one question at a time: "Question [n]/40 | Domain [x] | [Associate/Professional/Expert]"
 Four choices (A/B/C/D). Student replies with just the letter.
 
 After each answer:

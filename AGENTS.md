@@ -10,7 +10,7 @@ A modular CISSP exam prep system. Supports two modes: bootcamp (fixed Mon–Sat 
 
 | File | Role | Read when |
 |------|------|-----------|
-| `CONFIG.md` | Student's schedule, mode, material paths, preferences | Every session start |
+| `CONFIG.md` | Student's schedule, mode, material paths, difficulty tier, preferences | Every session start |
 | `DAILY-PROMPT.md` | Nightly study workflow — quiz, explain, track, generate audio | Nightly |
 | `REVIEW-PROMPT.md` | On-demand weighted review quiz (20–40 questions) | Weekly or on request |
 | `STUDY-GUIDE.md` | All 8 CISSP domains, weights, 2025-26 exam updates | Reference |
@@ -23,7 +23,8 @@ A modular CISSP exam prep system. Supports two modes: bootcamp (fixed Mon–Sat 
 ## Action Boundaries
 
 ### Always (do without asking)
-- Read CONFIG.md at session start to determine mode, schedule, and preferences
+- Read CONFIG.md at session start to determine mode, schedule, difficulty tier, and preferences
+- Apply difficulty_mode from CONFIG (associate/professional/expert/mixed) to all question sourcing and tag each question accordingly
 - If CONFIG.md is missing or unparseable, use defaults (5 questions, no materials, no transcription) and tell the student
 - Validate that referenced files exist before trying to read them
 - Run phases in order, confirming each before moving on
@@ -58,6 +59,7 @@ Mode: [bootcamp/self-paced]
 Domains: [which domains covered]
 Source: [materials/transcripts/training data]
 Questions asked: [n]
+Difficulty: [mode] ([n] Associate / [n] Professional / [n] Expert)
 Score: [x]/[n] ([%])
 Wrong answers added to bank: [n]
 Bank total: [n] entries across [n] sessions
@@ -75,6 +77,8 @@ Files written: [list]
 - The `materials/` folder is bring-your-own. File types, names, and structure vary per student. Check what's there, don't assume.
 - Some students will have instructor-specific homework (their professor assigns different questions each night). Defer to what the student tells you over what CONFIG says.
 - Memory hooks are pedagogically critical — make them vivid, specific, and accurate. Bad hooks are worse than no hooks.
+- Difficulty tiers are: Associate (recall/identification), Professional (scenario-based application), Expert (synthesis with competing priorities). Questions at different tiers are conceptually different, not just harder wording of the same question.
+- When updating the bank, always include the Difficulty field per entry and recalculate the per-tier columns in the Summary table.
 
 ## Contributing
 

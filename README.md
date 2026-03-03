@@ -95,6 +95,9 @@ Once a week, use **REVIEW-PROMPT.md** to take a 40-question review quiz weighted
 - ✅ **Built-in validation** — checks files, validates config, reports corruption
 - ✅ **Confidence tracking** — tracks whether you're guessing or confident
 - ✅ **Public domain knowledge** — Claude generates questions from CISSP training data
+- ✅ **Difficulty tiers** — Associate (recall), Professional (scenario), Expert (synthesis) with configurable mix
+- ✅ **Local web UI** — browser-based dashboard, quiz mode, review mode, wrong answer bank viewer (no API key needed)
+- ✅ **Obsidian integration** — vault structure with domain notes, quiz generator support, dataview tracking
 
 ## What Makes This Different
 
@@ -181,6 +184,36 @@ This kit focuses on the domains you configure, not exam-day simulation. For time
 | `materials/` | Your study materials (PDFs, PPTs) |
 | `transcripts/` | Your lecture transcripts (if using) |
 | `notes/` | Auto-generated daily study notes (created by system) |
+| `web/` | Local web UI (Flask server + single-page app) |
+| `web/questions.json` | Pre-built question bank (240 questions, 3 tiers) |
+| `OBSIDIAN-SETUP.md` | Guide: integrate with Obsidian for visual study + quiz generation |
+
+## Local Web UI
+
+The kit includes a browser-based study interface. No API key required — it uses a pre-built question bank of 240 questions across all 8 domains and 3 difficulty tiers.
+
+### Setup
+
+```bash
+cd web
+pip install -r requirements.txt
+python server.py
+```
+
+Open http://localhost:5000 in your browser.
+
+### Features
+
+- **Dashboard** — domain accuracy grid, difficulty breakdown, recent wrong answers, progress stats
+- **Quiz Mode** — select domains, difficulty, and question count. Interactive A/B/C/D buttons with instant feedback, explanations, and memory hooks
+- **Review Mode** — 40-question weighted quiz using the same algorithm as REVIEW-PROMPT.md (ISC2 weights + weakness boost)
+- **Bank Viewer** — search and filter your wrong answer bank by domain, difficulty, or status
+- **Settings** — configure difficulty mode, mixed distribution, dark mode
+- **Mobile-responsive** — works on your phone's browser too
+
+The web UI reads and writes the same WRONG-ANSWER-BANK.md file as the prompt system. They share one source of truth.
+
+---
 
 ## Study on the Go
 
@@ -276,6 +309,20 @@ After installing, tell Claude: *"Log me in to NotebookLM"* — a Chrome window o
 5. During study sessions, Claude can now cross-reference your materials via NotebookLM instead of reading raw PDFs each time
 
 > **Note:** The MCP server uses browser automation. The authors recommend using a secondary Google account rather than your primary one. Audio Overview generation is not available through the MCP — you still generate audio manually at notebooklm.google.com.
+
+---
+
+## Obsidian Integration
+
+If you use Obsidian for note-taking, the kit includes a ready-made vault structure with domain study notes, quiz generator support, and progress tracking.
+
+See [OBSIDIAN-SETUP.md](OBSIDIAN-SETUP.md) for the full setup guide. Key features:
+
+- **8 domain overview notes** with YAML frontmatter for quiz generation
+- **Wikilinks** between related domains for graph visualization
+- **Progress tracking** templates (manual or Dataview-powered)
+- **Symlink sync** — link your WRONG-ANSWER-BANK.md so Obsidian always shows current data
+- **Quiz Generator plugin** support — generate quizzes directly from domain notes
 
 ---
 

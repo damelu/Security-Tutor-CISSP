@@ -39,8 +39,16 @@ Priority order:
 - Else: generate CISSP-standard questions from training knowledge
 Mark each question's source (materials / transcripts / training data).
 
+Apply difficulty tier from CONFIG.md:
+- Read `difficulty_mode` (associate / professional / expert / mixed)
+- If mixed: distribute questions per `difficulty_distribution` (default 20/60/20)
+- If `weak_domain_difficulty_boost` is true: for domains where student accuracy < 70% in the bank, shift questions one tier harder
+- Associate = recall/identification ("What is…", "Which of the following…")
+- Professional = application/analysis (scenario-based, "What should the org do first?")
+- Expert = synthesis/evaluation (multi-layered competing priorities, "Which approach BEST…")
+
 **Step 3 — Run the daily quiz**
-Present questions one at a time. Format: "Question [n] of [total] | Domain [x]" followed by four choices. Student replies with just the letter (A/B/C/D). After each answer:
+Present questions one at a time. Format: "Question [n] of [total] | Domain [x] | [Associate/Professional/Expert]" followed by four choices. Student replies with just the letter (A/B/C/D). After each answer:
 - Say right or wrong
 - Explain the correct answer (2-3 sentences)
 - If wrong: provide a memory hook — a vivid, specific mental model

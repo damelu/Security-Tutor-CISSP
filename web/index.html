@@ -1,0 +1,2134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CISSP Study Kit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-bg-dark: #1a1a2e;
+            --color-card-dark: #16213e;
+            --color-accent: #0f3460;
+            --color-highlight: #e94560;
+            --color-success: #2ecc71;
+            --color-warning: #f39c12;
+            --color-error: #e74c3c;
+            --color-text-dark: #ecf0f1;
+            --color-text-light: #bdc3c7;
+            --color-border: #0f3460;
+
+            --color-bg-light: #f5f7fa;
+            --color-card-light: #ffffff;
+            --color-accent-light: #3498db;
+            --color-highlight-light: #e74c3c;
+            --color-text-light-mode: #2c3e50;
+            --color-text-light-light: #7f8c8d;
+
+            --domain-security-arch: #3498db;
+            --domain-access-control: #9b59b6;
+            --domain-asset-security: #e74c3c;
+            --domain-security-engineering: #f39c12;
+            --domain-communication-operations: #1abc9c;
+            --domain-identity-access: #e67e22;
+            --domain-security-assessment: #2ecc71;
+            --domain-security-ops: #c0392b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-dark);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.light-mode {
+            background-color: var(--color-bg-light);
+            color: var(--color-text-light-mode);
+        }
+
+        /* Header and Navigation */
+        header {
+            background-color: var(--color-card-dark);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        body.light-mode header {
+            background-color: var(--color-card-light);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        header .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--color-accent);
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--color-text-dark);
+            text-decoration: none;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        body.light-mode nav a {
+            color: var(--color-text-light-mode);
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--color-accent);
+        }
+
+        .theme-toggle {
+            background: var(--color-accent);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--color-highlight);
+        }
+
+        /* Container and Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--color-card-dark);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        body.light-mode .card {
+            background-color: var(--color-card-light);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-mode .card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Buttons */
+        button, .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: var(--color-accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-highlight);
+        }
+
+        .btn-secondary {
+            background-color: var(--color-text-light);
+            color: var(--color-card-dark);
+        }
+
+        body.light-mode .btn-secondary {
+            background-color: #ecf0f1;
+            color: var(--color-text-light-mode);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--color-accent);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--color-success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-danger {
+            background-color: var(--color-error);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-option {
+            width: 100%;
+            padding: 1rem;
+            margin: 0.75rem 0;
+            background-color: var(--color-accent);
+            color: white;
+            text-align: left;
+            font-size: 1.1rem;
+            border: 2px solid transparent;
+        }
+
+        .btn-option:hover {
+            border-color: var(--color-highlight);
+        }
+
+        .btn-option.correct {
+            background-color: var(--color-success);
+            border-color: var(--color-success);
+        }
+
+        .btn-option.incorrect {
+            background-color: var(--color-error);
+            border-color: var(--color-error);
+        }
+
+        .btn-option.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Grid Layouts */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid-auto {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        /* Domain Cards */
+        .domain-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .domain-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .domain-stat {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        .domain-accuracy {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+
+        .accuracy-high {
+            color: var(--color-success);
+        }
+
+        .accuracy-medium {
+            color: var(--color-warning);
+        }
+
+        .accuracy-low {
+            color: var(--color-error);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-domain {
+            color: white;
+        }
+
+        .badge-associate {
+            background-color: #3498db;
+        }
+
+        .badge-professional {
+            background-color: #f39c12;
+        }
+
+        .badge-expert {
+            background-color: #e74c3c;
+        }
+
+        .badge-active {
+            background-color: var(--color-success);
+            color: white;
+        }
+
+        .badge-mastered {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        /* Forms */
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            background-color: var(--color-card-dark);
+            color: var(--color-text-dark);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        body.light-mode input[type="text"],
+        body.light-mode input[type="number"],
+        body.light-mode select,
+        body.light-mode textarea {
+            background-color: #f9f9f9;
+            color: var(--color-text-light-mode);
+            border-color: #ddd;
+        }
+
+        input[type="checkbox"],
+        input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .checkbox-group,
+        .radio-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-item,
+        .radio-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: var(--color-accent);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        body.light-mode .progress-bar {
+            background-color: #ecf0f1;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--color-highlight);
+            transition: width 0.3s;
+        }
+
+        /* Quiz Styles */
+        .quiz-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .quiz-info {
+            font-size: 0.95rem;
+            color: var(--color-text-light);
+            margin-bottom: 1rem;
+        }
+
+        body.light-mode .quiz-info {
+            color: var(--color-text-light-light);
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .answer-options {
+            margin-bottom: 2rem;
+        }
+
+        .explanation-box {
+            background-color: var(--color-accent);
+            border-left: 4px solid var(--color-highlight);
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        body.light-mode .explanation-box {
+            background-color: #ecf0f1;
+            color: var(--color-text-light-mode);
+        }
+
+        .explanation-box.show {
+            display: block;
+        }
+
+        .explanation-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        body.light-mode .explanation-title {
+            color: var(--color-text-light-mode);
+        }
+
+        .explanation-text {
+            line-height: 1.8;
+        }
+
+        .hook-box {
+            background-color: rgba(233, 69, 96, 0.1);
+            border-left: 4px solid var(--color-highlight);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-style: italic;
+        }
+
+        /* Confidence Toggle */
+        .confidence-toggle {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+        }
+
+        .toggle-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--color-accent);
+            background-color: transparent;
+            color: var(--color-accent);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-btn.active {
+            background-color: var(--color-accent);
+            color: white;
+        }
+
+        /* Results Screen */
+        .results-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--color-accent);
+            margin: 1rem 0;
+        }
+
+        .score-message {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+        }
+
+        .breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .breakdown-item {
+            text-align: left;
+        }
+
+        .breakdown-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .breakdown-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* Wrong Answers */
+        .wrong-answer-item {
+            background-color: rgba(233, 69, 96, 0.1);
+            border-left: 4px solid var(--color-highlight);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+
+        body.light-mode .wrong-answer-item {
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+
+        .wrong-answer-text {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .wrong-answer-hook {
+            margin-top: 0.5rem;
+            font-style: italic;
+            color: var(--color-text-light);
+            font-size: 0.9rem;
+        }
+
+        body.light-mode .wrong-answer-hook {
+            color: var(--color-text-light-light);
+        }
+
+        /* Bank Viewer */
+        .bank-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .bank-controls input,
+        .bank-controls select {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .bank-entry {
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+
+        .bank-entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+
+        .bank-entry-text {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .bank-entry-badges {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+
+        .bank-entry-meta {
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        body.light-mode .bank-entry-meta {
+            color: var(--color-text-light-light);
+        }
+
+        .bank-entry-details {
+            display: none;
+            background-color: var(--color-accent);
+            padding: 1rem;
+            margin-top: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+
+        .bank-entry-details.show {
+            display: block;
+        }
+
+        /* Settings */
+        .settings-form {
+            max-width: 600px;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .slider-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .slider-group input[type="range"] {
+            flex: 1;
+        }
+
+        .slider-value {
+            min-width: 50px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .slider-sum {
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--color-text-light);
+            margin-top: 0.5rem;
+        }
+
+        body.light-mode .slider-sum {
+            color: var(--color-text-light-light);
+        }
+
+        /* Start Screen */
+        .start-screen {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .start-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .start-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .domain-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .difficulty-options,
+        .count-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .option-btn {
+            padding: 1rem;
+            border: 2px solid var(--color-border);
+            background-color: transparent;
+            color: var(--color-text-dark);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        body.light-mode .option-btn {
+            color: var(--color-text-light-mode);
+            border-color: #ddd;
+        }
+
+        .option-btn.selected {
+            background-color: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+        }
+
+        .start-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* Stat Cards */
+        .stat-card {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--color-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--color-text-light);
+        }
+
+        body.light-mode .stat-label {
+            color: var(--color-text-light-light);
+        }
+
+        /* Dashboard */
+        .dashboard-section {
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--color-accent);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .quick-actions button {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header .container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .grid-auto,
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .start-actions {
+                flex-direction: column;
+            }
+
+            .quick-actions button {
+                min-width: auto;
+            }
+
+            .domain-checkboxes {
+                grid-template-columns: 1fr;
+            }
+
+            .question-text {
+                font-size: 1.1rem;
+            }
+
+            .score-display {
+                font-size: 2rem;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-1 { margin-top: 1rem; }
+        .mt-2 { margin-top: 2rem; }
+        .mb-1 { margin-bottom: 1rem; }
+        .mb-2 { margin-bottom: 2rem; }
+
+        .text-muted {
+            color: var(--color-text-light);
+        }
+
+        body.light-mode .text-muted {
+            color: var(--color-text-light-light);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">CISSP Study Kit</div>
+            <nav>
+                <a href="#dashboard" class="nav-link active" data-page="dashboard">Dashboard</a>
+                <a href="#quiz" class="nav-link" data-page="quiz">Quiz</a>
+                <a href="#review" class="nav-link" data-page="review">Review</a>
+                <a href="#bank" class="nav-link" data-page="bank">Bank</a>
+                <a href="#settings" class="nav-link" data-page="settings">Settings</a>
+                <button class="theme-toggle" id="themeToggle">🌙</button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Dashboard View -->
+        <div id="dashboard" class="view active">
+            <div class="container">
+                <div class="dashboard-section">
+                    <h2>Overview</h2>
+                    <div class="grid grid-3">
+                        <div class="card stat-card">
+                            <div class="stat-value" id="totalQuestionsAnswered">0</div>
+                            <div class="stat-label">Questions Answered</div>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="stat-value" id="overallAccuracy">0%</div>
+                            <div class="stat-label">Overall Accuracy</div>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="stat-value" id="studyStreak">0</div>
+                            <div class="stat-label">Day Streak</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-section">
+                    <h2>Domain Accuracy</h2>
+                    <div class="grid grid-auto" id="domainGrid"></div>
+                </div>
+
+                <div class="dashboard-section">
+                    <h2>Difficulty Breakdown</h2>
+                    <div class="grid grid-3" id="difficultyGrid"></div>
+                </div>
+
+                <div class="dashboard-section">
+                    <h2>Recent Wrong Answers</h2>
+                    <div id="recentWrongAnswers"></div>
+                </div>
+
+                <div class="dashboard-section">
+                    <h2>Quick Actions</h2>
+                    <div class="quick-actions">
+                        <button class="btn btn-primary" onclick="goToPage('quiz')">Start Quiz</button>
+                        <button class="btn btn-primary" onclick="goToPage('review')">Start Review</button>
+                        <button class="btn btn-secondary" onclick="goToPage('bank')">View Bank</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz View -->
+        <div id="quiz" class="view">
+            <div class="container">
+                <div id="quizStartScreen" class="start-screen">
+                    <h1>Start Quiz</h1>
+
+                    <div class="start-section">
+                        <h3>Select Domains</h3>
+                        <button class="btn btn-secondary" onclick="selectAllDomains()">Select All</button>
+                        <button class="btn btn-secondary" onclick="deselectAllDomains()" style="margin-left: 0.5rem;">Deselect All</button>
+                        <div class="domain-checkboxes" id="domainCheckboxes"></div>
+                    </div>
+
+                    <div class="start-section">
+                        <h3>Select Difficulty</h3>
+                        <div class="difficulty-options" id="difficultyOptions"></div>
+                    </div>
+
+                    <div class="start-section">
+                        <h3>Number of Questions</h3>
+                        <div class="count-options" id="countOptions"></div>
+                    </div>
+
+                    <div class="start-actions">
+                        <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+                        <button class="btn btn-secondary" onclick="goToPage('dashboard')">Cancel</button>
+                    </div>
+                </div>
+
+                <div id="quizScreen" class="hidden">
+                    <div class="quiz-header">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="quizProgress" style="width: 0%;"></div>
+                        </div>
+                        <div class="quiz-info" id="quizInfo"></div>
+                    </div>
+
+                    <div class="question-text" id="questionText"></div>
+
+                    <div class="answer-options" id="answerOptions"></div>
+
+                    <div class="explanation-box" id="explanationBox">
+                        <div class="explanation-title">Explanation</div>
+                        <div class="explanation-text" id="explanationText"></div>
+                        <div class="hook-box" id="hookBox"></div>
+                    </div>
+
+                    <div class="confidence-toggle" id="confidenceToggle">
+                        <button class="toggle-btn active" data-confidence="confident" onclick="setConfidence('confident')">Confident</button>
+                        <button class="toggle-btn" data-confidence="guessing" onclick="setConfidence('guessing')">Guessing</button>
+                    </div>
+
+                    <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" style="width: 100%;">Next Question</button>
+                </div>
+
+                <div id="quizResultsScreen" class="hidden">
+                    <div class="results-container">
+                        <h2>Quiz Complete!</h2>
+                        <div class="score-display" id="quizScore"></div>
+                        <div class="score-message" id="scoreMessage"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Performance Breakdown</h3>
+                        <div class="breakdown" id="quizBreakdown"></div>
+                    </div>
+
+                    <div class="card mt-2">
+                        <h3>Wrong Answers</h3>
+                        <div id="quizWrongAnswers"></div>
+                    </div>
+
+                    <div class="start-actions mt-2">
+                        <button class="btn btn-success" onclick="saveToBankFromQuiz()">Save to Bank</button>
+                        <button class="btn btn-primary" onclick="showQuizStart()">New Quiz</button>
+                        <button class="btn btn-secondary" onclick="goToPage('dashboard')">Back to Dashboard</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review View -->
+        <div id="review" class="view">
+            <div class="container">
+                <div id="reviewStartScreen" class="start-screen">
+                    <h1>Start Review</h1>
+                    <p style="margin-bottom: 2rem;">40 questions weighted by domain distribution.</p>
+
+                    <div class="start-section">
+                        <h3>Review Mode</h3>
+                        <div class="difficulty-options" id="reviewModeOptions"></div>
+                    </div>
+
+                    <div class="start-actions">
+                        <button class="btn btn-primary" onclick="startReview()">Start Review</button>
+                        <button class="btn btn-secondary" onclick="goToPage('dashboard')">Cancel</button>
+                    </div>
+                </div>
+
+                <div id="reviewScreen" class="hidden">
+                    <div class="quiz-header">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="reviewProgress" style="width: 0%;"></div>
+                        </div>
+                        <div class="quiz-info" id="reviewInfo"></div>
+                        <div id="reviewTimer" style="font-size: 1.2rem; font-weight: bold; margin-top: 1rem;"></div>
+                    </div>
+
+                    <div class="question-text" id="reviewQuestionText"></div>
+
+                    <div class="answer-options" id="reviewAnswerOptions"></div>
+
+                    <div class="explanation-box" id="reviewExplanationBox">
+                        <div class="explanation-title">Explanation</div>
+                        <div class="explanation-text" id="reviewExplanationText"></div>
+                        <div class="hook-box" id="reviewHookBox"></div>
+                    </div>
+
+                    <div class="confidence-toggle" id="reviewConfidenceToggle">
+                        <button class="toggle-btn active" data-confidence="confident" onclick="setReviewConfidence('confident')">Confident</button>
+                        <button class="toggle-btn" data-confidence="guessing" onclick="setReviewConfidence('guessing')">Guessing</button>
+                    </div>
+
+                    <button class="btn btn-primary" id="reviewNextBtn" onclick="nextReviewQuestion()" style="width: 100%;">Next Question</button>
+                </div>
+
+                <div id="reviewResultsScreen" class="hidden">
+                    <div class="results-container">
+                        <h2>Review Complete!</h2>
+                        <div class="score-display" id="reviewScore"></div>
+                        <div class="score-message" id="reviewScoreMessage"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Performance by Domain</h3>
+                        <div class="breakdown" id="reviewBreakdown"></div>
+                    </div>
+
+                    <div class="card mt-2">
+                        <h3>Performance by Difficulty</h3>
+                        <div class="breakdown" id="reviewDifficultyBreakdown"></div>
+                    </div>
+
+                    <div class="card mt-2">
+                        <h3>Wrong Answers</h3>
+                        <div id="reviewWrongAnswers"></div>
+                    </div>
+
+                    <div class="start-actions mt-2">
+                        <button class="btn btn-success" onclick="saveToBankFromReview()">Save to Bank</button>
+                        <button class="btn btn-primary" onclick="showReviewStart()">New Review</button>
+                        <button class="btn btn-secondary" onclick="goToPage('dashboard')">Back to Dashboard</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bank View -->
+        <div id="bank" class="view">
+            <div class="container">
+                <h1>Wrong Answer Bank</h1>
+
+                <div class="card">
+                    <div class="bank-controls">
+                        <input type="text" id="bankSearch" placeholder="Search questions..." onkeyup="filterBank()">
+                        <select id="bankDomainFilter" onchange="filterBank()">
+                            <option value="">All Domains</option>
+                        </select>
+                        <select id="bankDifficultyFilter" onchange="filterBank()">
+                            <option value="">All Difficulties</option>
+                            <option value="associate">Associate</option>
+                            <option value="professional">Professional</option>
+                            <option value="expert">Expert</option>
+                        </select>
+                        <select id="bankStatusFilter" onchange="filterBank()">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="mastered">Mastered</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="bankEntries"></div>
+            </div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="settings" class="view">
+            <div class="container">
+                <h1>Settings</h1>
+
+                <div class="card">
+                    <form class="settings-form" onsubmit="saveSettings(event)">
+                        <div class="form-group">
+                            <label for="difficultyMode">Difficulty Mode</label>
+                            <select id="difficultyMode">
+                                <option value="associate">Associate</option>
+                                <option value="professional">Professional</option>
+                                <option value="expert">Expert</option>
+                                <option value="mixed">Mixed</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Mixed Distribution (must sum to 100%)</label>
+                            <div class="slider-group">
+                                <label for="associateSlider">Associate</label>
+                                <input type="range" id="associateSlider" min="0" max="100" value="33" oninput="updateSliders('associate')">
+                                <span class="slider-value" id="associateValue">33%</span>
+                            </div>
+                            <div class="slider-group">
+                                <label for="professionalSlider">Professional</label>
+                                <input type="range" id="professionalSlider" min="0" max="100" value="34" oninput="updateSliders('professional')">
+                                <span class="slider-value" id="professionalValue">34%</span>
+                            </div>
+                            <div class="slider-group">
+                                <label for="expertSlider">Expert</label>
+                                <input type="range" id="expertSlider" min="0" max="100" value="33" oninput="updateSliders('expert')">
+                                <span class="slider-value" id="expertValue">33%</span>
+                            </div>
+                            <div class="slider-sum" id="sliderSum">Sum: 100%</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dailyQuestions">Daily Quiz Questions</label>
+                            <input type="number" id="dailyQuestions" min="5" max="50" value="10">
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="weakDomainBoost">
+                                Boost weak domain questions
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="darkModeToggle">
+                                Dark Mode
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Save Settings</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // State Management
+        const state = {
+            config: {},
+            questions: [],
+            bank: [],
+            stats: {},
+            currentQuiz: null,
+            currentReview: null,
+            darkMode: localStorage.getItem('darkMode') === 'true',
+            settings: {
+                difficultyMode: 'professional',
+                mixedDistribution: { associate: 33, professional: 34, expert: 33 },
+                dailyQuestions: 10,
+                weakDomainBoost: false
+            }
+        };
+
+        const domains = [
+            { id: 'security-architecture', name: 'Security Architecture and Engineering' },
+            { id: 'access-control', name: 'Asset Security' },
+            { id: 'communication', name: 'Security Assessment & Development' },
+            { id: 'identity-access', name: 'Identity and Access Management' },
+            { id: 'security-operations', name: 'Security Operations' },
+            { id: 'risk-management', name: 'Risk Management' },
+            { id: 'security-governance', name: 'Security and Risk Management' },
+            { id: 'software-development', name: 'Software Development Security' }
+        ];
+
+        // Initialize
+        async function init() {
+            applyTheme();
+            await fetchData();
+            setupEventListeners();
+            renderDashboard();
+        }
+
+        async function fetchData() {
+            try {
+                const [configRes, questionsRes, bankRes, statsRes] = await Promise.all([
+                    fetch('/api/config'),
+                    fetch('/api/questions?domain=all&difficulty=all'),
+                    fetch('/api/bank'),
+                    fetch('/api/stats')
+                ]);
+
+                if (configRes.ok) state.config = await configRes.json();
+                if (questionsRes.ok) state.questions = await questionsRes.json();
+                if (bankRes.ok) state.bank = await bankRes.json();
+                if (statsRes.ok) state.stats = await statsRes.json();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        function setupEventListeners() {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = link.dataset.page;
+                    goToPage(page);
+                });
+            });
+
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            window.addEventListener('hashchange', handleHashChange);
+        }
+
+        function applyTheme() {
+            if (state.darkMode) {
+                document.body.classList.remove('light-mode');
+                document.getElementById('themeToggle').textContent = '☀️';
+            } else {
+                document.body.classList.add('light-mode');
+                document.getElementById('themeToggle').textContent = '🌙';
+            }
+        }
+
+        function toggleTheme() {
+            state.darkMode = !state.darkMode;
+            localStorage.setItem('darkMode', state.darkMode);
+            applyTheme();
+        }
+
+        function goToPage(page) {
+            window.location.hash = page;
+        }
+
+        function handleHashChange() {
+            const hash = window.location.hash.slice(1) || 'dashboard';
+            showView(hash);
+        }
+
+        function showView(viewName) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewName)?.classList.add('active');
+
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            document.querySelector(`[data-page="${viewName}"]`)?.classList.add('active');
+
+            if (viewName === 'dashboard') renderDashboard();
+            if (viewName === 'quiz') renderQuizStart();
+            if (viewName === 'review') renderReviewStart();
+            if (viewName === 'bank') renderBank();
+            if (viewName === 'settings') renderSettings();
+        }
+
+        // Dashboard
+        function renderDashboard() {
+            renderDomainGrid();
+            renderDifficultyBreakdown();
+            renderRecentWrongAnswers();
+            renderOverallStats();
+        }
+
+        function renderDomainGrid() {
+            const grid = document.getElementById('domainGrid');
+            grid.innerHTML = '';
+
+            domains.forEach(domain => {
+                const domainStats = state.stats.domains?.[domain.id] || { wrong: 0, accuracy: 0 };
+                const accuracyClass = domainStats.accuracy >= 80 ? 'accuracy-high' :
+                                     domainStats.accuracy >= 60 ? 'accuracy-medium' : 'accuracy-low';
+
+                const card = document.createElement('div');
+                card.className = 'card domain-card';
+                card.innerHTML = `
+                    <div class="domain-name">${domain.name}</div>
+                    <div class="domain-stat">
+                        <span>Wrong Answers:</span>
+                        <span>${domainStats.wrong || 0}</span>
+                    </div>
+                    <div class="domain-accuracy ${accuracyClass}">${domainStats.accuracy || 0}%</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderDifficultyBreakdown() {
+            const grid = document.getElementById('difficultyGrid');
+            grid.innerHTML = '';
+
+            const difficulties = ['associate', 'professional', 'expert'];
+            difficulties.forEach(diff => {
+                const stats = state.stats.difficulty?.[diff] || { accuracy: 0, total: 0 };
+                const label = diff.charAt(0).toUpperCase() + diff.slice(1);
+                const badgeClass = `badge-${diff}`;
+
+                const card = document.createElement('div');
+                card.className = 'card stat-card';
+                card.innerHTML = `
+                    <div class="badge ${badgeClass}">${label}</div>
+                    <div class="stat-value">${stats.accuracy || 0}%</div>
+                    <div class="stat-label">${stats.total || 0} questions</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderRecentWrongAnswers() {
+            const container = document.getElementById('recentWrongAnswers');
+            const recent = state.bank.slice(0, 5);
+
+            if (recent.length === 0) {
+                container.innerHTML = '<p class="text-muted">No wrong answers recorded yet.</p>';
+                return;
+            }
+
+            container.innerHTML = recent.map(entry => `
+                <div class="wrong-answer-item">
+                    <div class="wrong-answer-text">${entry.questionSnippet || entry.question}</div>
+                    <div class="badge badge-domain">${entry.domain}</div>
+                    <div class="badge badge-${entry.difficulty}">${entry.difficulty}</div>
+                    ${entry.memoryHook ? `<div class="wrong-answer-hook">💡 ${entry.memoryHook}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function renderOverallStats() {
+            const totalAnswered = state.stats.totalQuestionsAnswered || 0;
+            const overallAccuracy = state.stats.overallAccuracy || 0;
+            const streak = state.stats.studyStreak || 0;
+
+            document.getElementById('totalQuestionsAnswered').textContent = totalAnswered;
+            document.getElementById('overallAccuracy').textContent = overallAccuracy + '%';
+            document.getElementById('studyStreak').textContent = streak;
+        }
+
+        // Quiz
+        function renderQuizStart() {
+            renderDomainCheckboxes();
+            renderDifficultyOptions('quiz');
+            renderCountOptions();
+            showQuizStart();
+        }
+
+        function renderDomainCheckboxes() {
+            const container = document.getElementById('domainCheckboxes');
+            container.innerHTML = '';
+
+            domains.forEach(domain => {
+                const label = document.createElement('label');
+                label.className = 'checkbox-item';
+                label.innerHTML = `
+                    <input type="checkbox" class="domain-checkbox" value="${domain.id}" checked>
+                    <span>${domain.name}</span>
+                `;
+                container.appendChild(label);
+            });
+        }
+
+        function renderDifficultyOptions(mode) {
+            const containerId = mode === 'quiz' ? 'difficultyOptions' : 'reviewModeOptions';
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            if (mode === 'review') {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn selected';
+                btn.type = 'button';
+                btn.textContent = 'Timed (3 hours)';
+                btn.onclick = () => {
+                    document.querySelectorAll('#reviewModeOptions .option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    state.currentReview = state.currentReview || {};
+                    state.currentReview.timed = true;
+                };
+                container.appendChild(btn);
+
+                const btn2 = document.createElement('button');
+                btn2.className = 'option-btn';
+                btn2.type = 'button';
+                btn2.textContent = 'Learning Mode';
+                btn2.onclick = () => {
+                    document.querySelectorAll('#reviewModeOptions .option-btn').forEach(b => b.classList.remove('selected'));
+                    btn2.classList.add('selected');
+                    state.currentReview = state.currentReview || {};
+                    state.currentReview.timed = false;
+                };
+                container.appendChild(btn2);
+            } else {
+                ['associate', 'professional', 'expert', 'mixed'].forEach(diff => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn' + (diff === 'professional' ? ' selected' : '');
+                    btn.type = 'button';
+                    btn.textContent = diff.charAt(0).toUpperCase() + diff.slice(1);
+                    btn.onclick = () => {
+                        document.querySelectorAll('#difficultyOptions .option-btn').forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                        state.currentQuiz = state.currentQuiz || {};
+                        state.currentQuiz.difficulty = diff;
+                    };
+                    container.appendChild(btn);
+                });
+            }
+        }
+
+        function renderCountOptions() {
+            const container = document.getElementById('countOptions');
+            container.innerHTML = '';
+
+            [5, 8, 10].forEach(count => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn' + (count === 10 ? ' selected' : '');
+                btn.type = 'button';
+                btn.textContent = count;
+                btn.onclick = () => {
+                    document.querySelectorAll('#countOptions .option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    state.currentQuiz = state.currentQuiz || {};
+                    state.currentQuiz.count = count;
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function selectAllDomains() {
+            document.querySelectorAll('.domain-checkbox').forEach(cb => cb.checked = true);
+        }
+
+        function deselectAllDomains() {
+            document.querySelectorAll('.domain-checkbox').forEach(cb => cb.checked = false);
+        }
+
+        function showQuizStart() {
+            document.getElementById('quizStartScreen').classList.remove('hidden');
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('quizResultsScreen').classList.add('hidden');
+        }
+
+        async function startQuiz() {
+            const selectedDomains = Array.from(document.querySelectorAll('.domain-checkbox:checked')).map(cb => cb.value);
+            const difficulty = state.currentQuiz?.difficulty || 'professional';
+            const count = state.currentQuiz?.count || 10;
+
+            if (selectedDomains.length === 0) {
+                alert('Please select at least one domain');
+                return;
+            }
+
+            try {
+                const queries = selectedDomains.map(d => `domain=${d}&difficulty=${difficulty}`).join('&');
+                const res = await fetch(`/api/questions?${queries}`);
+                let questions = await res.json();
+
+                questions = questions.sort(() => Math.random() - 0.5).slice(0, count);
+
+                state.currentQuiz = {
+                    questions,
+                    currentIndex: 0,
+                    answers: [],
+                    score: 0,
+                    difficulty
+                };
+
+                showQuizQuestion();
+            } catch (error) {
+                console.error('Error starting quiz:', error);
+                alert('Error loading questions');
+            }
+        }
+
+        function showQuizQuestion() {
+            document.getElementById('quizStartScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            document.getElementById('quizResultsScreen').classList.add('hidden');
+
+            const quiz = state.currentQuiz;
+            const question = quiz.questions[quiz.currentIndex];
+
+            document.getElementById('quizInfo').innerHTML =
+                `Question ${quiz.currentIndex + 1} of ${quiz.questions.length} | ${question.domain} | ${question.difficulty}`;
+
+            document.getElementById('quizProgress').style.width =
+                ((quiz.currentIndex / quiz.questions.length) * 100) + '%';
+
+            document.getElementById('questionText').textContent = question.question;
+
+            const optionsContainer = document.getElementById('answerOptions');
+            optionsContainer.innerHTML = '';
+
+            ['A', 'B', 'C', 'D'].forEach((letter, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-option';
+                btn.textContent = `${letter}. ${question[`option${letter}`]}`;
+                btn.onclick = () => selectAnswer(letter, question.correctAnswer);
+                btn.id = `option-${letter}`;
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('explanationBox').classList.remove('show');
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('nextBtn').style.opacity = '0.5';
+        }
+
+        function selectAnswer(selected, correct) {
+            const isCorrect = selected === correct;
+            const quiz = state.currentQuiz;
+
+            quiz.answers.push({
+                questionId: quiz.questions[quiz.currentIndex].id,
+                selected,
+                correct,
+                isCorrect
+            });
+
+            if (isCorrect) {
+                quiz.score++;
+                document.getElementById(`option-${selected}`).classList.add('correct');
+            } else {
+                document.getElementById(`option-${selected}`).classList.add('incorrect');
+                document.getElementById(`option-${correct}`).classList.add('correct');
+            }
+
+            const question = quiz.questions[quiz.currentIndex];
+            document.getElementById('explanationText').textContent = question.explanation;
+
+            if (question.memoryHook) {
+                document.getElementById('hookBox').textContent = question.memoryHook;
+            }
+
+            document.getElementById('explanationBox').classList.add('show');
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('nextBtn').style.opacity = '1';
+
+            ['A', 'B', 'C', 'D'].forEach(l => {
+                document.getElementById(`option-${l}`).disabled = true;
+            });
+        }
+
+        function setConfidence(level) {
+            document.querySelectorAll('#confidenceToggle .toggle-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`#confidenceToggle [data-confidence="${level}"]`).classList.add('active');
+        }
+
+        function nextQuestion() {
+            state.currentQuiz.currentIndex++;
+
+            if (state.currentQuiz.currentIndex >= state.currentQuiz.questions.length) {
+                showQuizResults();
+            } else {
+                showQuizQuestion();
+            }
+        }
+
+        function showQuizResults() {
+            document.getElementById('quizStartScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('quizResultsScreen').classList.remove('hidden');
+
+            const quiz = state.currentQuiz;
+            const percentage = Math.round((quiz.score / quiz.questions.length) * 100);
+
+            document.getElementById('quizScore').textContent = `${quiz.score}/${quiz.questions.length}`;
+
+            let message = '';
+            if (percentage >= 80) {
+                message = 'Excellent performance! Keep it up!';
+            } else if (percentage >= 60) {
+                message = 'Good effort! Review weak areas to improve.';
+            } else {
+                message = 'Keep studying. You\'ll get there!';
+            }
+            document.getElementById('scoreMessage').textContent = message;
+
+            renderQuizBreakdown();
+            renderQuizWrongAnswers();
+        }
+
+        function renderQuizBreakdown() {
+            const quiz = state.currentQuiz;
+            const breakdown = {};
+
+            quiz.questions.forEach((q, idx) => {
+                if (!breakdown[q.domain]) breakdown[q.domain] = { correct: 0, total: 0 };
+                breakdown[q.domain].total++;
+                if (quiz.answers[idx]?.isCorrect) breakdown[q.domain].correct++;
+            });
+
+            const container = document.getElementById('quizBreakdown');
+            container.innerHTML = Object.entries(breakdown).map(([domain, stats]) => {
+                const accuracy = Math.round((stats.correct / stats.total) * 100);
+                return `
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">${domain}</div>
+                        <div class="breakdown-value">${stats.correct}/${stats.total} (${accuracy}%)</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderQuizWrongAnswers() {
+            const quiz = state.currentQuiz;
+            const container = document.getElementById('quizWrongAnswers');
+            const wrongAnswers = [];
+
+            quiz.answers.forEach((answer, idx) => {
+                if (!answer.isCorrect) {
+                    wrongAnswers.push({
+                        ...quiz.questions[idx],
+                        selected: answer.selected,
+                        correct: answer.correct
+                    });
+                }
+            });
+
+            if (wrongAnswers.length === 0) {
+                container.innerHTML = '<p class="text-muted">Perfect! No wrong answers.</p>';
+                return;
+            }
+
+            container.innerHTML = wrongAnswers.map(qa => `
+                <div class="wrong-answer-item">
+                    <div class="wrong-answer-text">${qa.question}</div>
+                    <div style="margin-top: 0.5rem;">
+                        <strong>Your answer:</strong> ${qa.selected}<br>
+                        <strong>Correct answer:</strong> ${qa.correct}
+                    </div>
+                    ${qa.explanation ? `<div style="margin-top: 0.5rem;"><strong>Explanation:</strong> ${qa.explanation}</div>` : ''}
+                    ${qa.memoryHook ? `<div class="wrong-answer-hook">💡 ${qa.memoryHook}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function saveToBankFromQuiz() {
+            const quiz = state.currentQuiz;
+            const entries = [];
+
+            quiz.answers.forEach((answer, idx) => {
+                if (!answer.isCorrect) {
+                    const q = quiz.questions[idx];
+                    entries.push({
+                        question: q.question,
+                        questionSnippet: q.question.substring(0, 80) + '...',
+                        domain: q.domain,
+                        difficulty: q.difficulty,
+                        correctAnswer: q.correctAnswer,
+                        explanation: q.explanation,
+                        memoryHook: q.memoryHook,
+                        selected: answer.selected,
+                        attempts: 1,
+                        status: 'active'
+                    });
+                }
+            });
+
+            if (entries.length === 0) {
+                alert('No wrong answers to save!');
+                return;
+            }
+
+            try {
+                await fetch('/api/bank/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        entries,
+                        date: new Date().toISOString().split('T')[0]
+                    })
+                });
+                alert('Saved to bank!');
+                state.bank.push(...entries);
+            } catch (error) {
+                console.error('Error saving to bank:', error);
+                alert('Error saving to bank');
+            }
+        }
+
+        // Review
+        function renderReviewStart() {
+            renderDifficultyOptions('review');
+        }
+
+        function showReviewStart() {
+            document.getElementById('reviewStartScreen').classList.remove('hidden');
+            document.getElementById('reviewScreen').classList.add('hidden');
+            document.getElementById('reviewResultsScreen').classList.add('hidden');
+        }
+
+        async function startReview() {
+            try {
+                const res = await fetch('/api/review-distribution');
+                const distribution = await res.json();
+
+                let questions = [];
+                for (const domain in distribution) {
+                    const count = distribution[domain];
+                    const domainQuestions = state.questions.filter(q => q.domain === domain);
+                    questions.push(...domainQuestions.sort(() => Math.random() - 0.5).slice(0, count));
+                }
+
+                state.currentReview = {
+                    questions: questions.sort(() => Math.random() - 0.5),
+                    currentIndex: 0,
+                    answers: [],
+                    score: 0,
+                    timed: document.querySelector('#reviewModeOptions .option-btn.selected')?.textContent.includes('Timed'),
+                    startTime: Date.now()
+                };
+
+                showReviewQuestion();
+            } catch (error) {
+                console.error('Error starting review:', error);
+                alert('Error loading review questions');
+            }
+        }
+
+        function showReviewQuestion() {
+            document.getElementById('reviewStartScreen').classList.add('hidden');
+            document.getElementById('reviewScreen').classList.remove('hidden');
+            document.getElementById('reviewResultsScreen').classList.add('hidden');
+
+            const review = state.currentReview;
+            const question = review.questions[review.currentIndex];
+
+            document.getElementById('reviewInfo').innerHTML =
+                `Question ${review.currentIndex + 1} of ${review.questions.length} | ${question.domain} | ${question.difficulty}`;
+
+            document.getElementById('reviewProgress').style.width =
+                ((review.currentIndex / review.questions.length) * 100) + '%';
+
+            if (review.timed) {
+                updateReviewTimer();
+            }
+
+            document.getElementById('reviewQuestionText').textContent = question.question;
+
+            const optionsContainer = document.getElementById('reviewAnswerOptions');
+            optionsContainer.innerHTML = '';
+
+            ['A', 'B', 'C', 'D'].forEach((letter, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-option';
+                btn.textContent = `${letter}. ${question[`option${letter}`]}`;
+                btn.onclick = () => selectReviewAnswer(letter, question.correctAnswer);
+                btn.id = `review-option-${letter}`;
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('reviewExplanationBox').classList.remove('show');
+            document.getElementById('reviewNextBtn').disabled = true;
+        }
+
+        function updateReviewTimer() {
+            const review = state.currentReview;
+            const elapsed = Math.floor((Date.now() - review.startTime) / 1000);
+            const remaining = Math.max(0, (3 * 60 * 60) - elapsed);
+
+            const hours = Math.floor(remaining / 3600);
+            const minutes = Math.floor((remaining % 3600) / 60);
+            const seconds = remaining % 60;
+
+            const timerEl = document.getElementById('reviewTimer');
+            timerEl.textContent = `Time: ${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            if (remaining > 0) {
+                setTimeout(updateReviewTimer, 1000);
+            }
+        }
+
+        function selectReviewAnswer(selected, correct) {
+            const isCorrect = selected === correct;
+            const review = state.currentReview;
+
+            review.answers.push({
+                questionId: review.questions[review.currentIndex].id,
+                selected,
+                correct,
+                isCorrect
+            });
+
+            if (isCorrect) {
+                review.score++;
+                document.getElementById(`review-option-${selected}`).classList.add('correct');
+            } else {
+                document.getElementById(`review-option-${selected}`).classList.add('incorrect');
+                document.getElementById(`review-option-${correct}`).classList.add('correct');
+            }
+
+            const question = review.questions[review.currentIndex];
+            document.getElementById('reviewExplanationText').textContent = question.explanation;
+
+            if (question.memoryHook) {
+                document.getElementById('reviewHookBox').textContent = question.memoryHook;
+            }
+
+            document.getElementById('reviewExplanationBox').classList.add('show');
+            document.getElementById('reviewNextBtn').disabled = false;
+
+            ['A', 'B', 'C', 'D'].forEach(l => {
+                document.getElementById(`review-option-${l}`).disabled = true;
+            });
+        }
+
+        function setReviewConfidence(level) {
+            document.querySelectorAll('#reviewConfidenceToggle .toggle-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`#reviewConfidenceToggle [data-confidence="${level}"]`).classList.add('active');
+        }
+
+        function nextReviewQuestion() {
+            state.currentReview.currentIndex++;
+
+            if (state.currentReview.currentIndex >= state.currentReview.questions.length) {
+                showReviewResults();
+            } else {
+                showReviewQuestion();
+            }
+        }
+
+        function showReviewResults() {
+            document.getElementById('reviewStartScreen').classList.add('hidden');
+            document.getElementById('reviewScreen').classList.add('hidden');
+            document.getElementById('reviewResultsScreen').classList.remove('hidden');
+
+            const review = state.currentReview;
+            const percentage = Math.round((review.score / review.questions.length) * 100);
+
+            document.getElementById('reviewScore').textContent = `${review.score}/${review.questions.length}`;
+
+            let message = '';
+            if (percentage >= 80) {
+                message = 'Excellent performance! You\'re exam-ready!';
+            } else if (percentage >= 60) {
+                message = 'Good preparation. Focus on weak areas for final push.';
+            } else {
+                message = 'Keep practicing. You\'ll be ready soon!';
+            }
+            document.getElementById('reviewScoreMessage').textContent = message;
+
+            renderReviewBreakdown();
+            renderReviewDifficultyBreakdown();
+            renderReviewWrongAnswers();
+        }
+
+        function renderReviewBreakdown() {
+            const review = state.currentReview;
+            const breakdown = {};
+
+            review.questions.forEach((q, idx) => {
+                if (!breakdown[q.domain]) breakdown[q.domain] = { correct: 0, total: 0 };
+                breakdown[q.domain].total++;
+                if (review.answers[idx]?.isCorrect) breakdown[q.domain].correct++;
+            });
+
+            const container = document.getElementById('reviewBreakdown');
+            container.innerHTML = Object.entries(breakdown).map(([domain, stats]) => {
+                const accuracy = Math.round((stats.correct / stats.total) * 100);
+                return `
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">${domain}</div>
+                        <div class="breakdown-value">${stats.correct}/${stats.total} (${accuracy}%)</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderReviewDifficultyBreakdown() {
+            const review = state.currentReview;
+            const breakdown = {};
+
+            review.questions.forEach((q, idx) => {
+                if (!breakdown[q.difficulty]) breakdown[q.difficulty] = { correct: 0, total: 0 };
+                breakdown[q.difficulty].total++;
+                if (review.answers[idx]?.isCorrect) breakdown[q.difficulty].correct++;
+            });
+
+            const container = document.getElementById('reviewDifficultyBreakdown');
+            container.innerHTML = Object.entries(breakdown).map(([difficulty, stats]) => {
+                const accuracy = Math.round((stats.correct / stats.total) * 100);
+                const label = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+                return `
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">${label}</div>
+                        <div class="breakdown-value">${stats.correct}/${stats.total} (${accuracy}%)</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderReviewWrongAnswers() {
+            const review = state.currentReview;
+            const container = document.getElementById('reviewWrongAnswers');
+            const wrongAnswers = [];
+
+            review.answers.forEach((answer, idx) => {
+                if (!answer.isCorrect) {
+                    wrongAnswers.push({
+                        ...review.questions[idx],
+                        selected: answer.selected,
+                        correct: answer.correct
+                    });
+                }
+            });
+
+            if (wrongAnswers.length === 0) {
+                container.innerHTML = '<p class="text-muted">Perfect! No wrong answers.</p>';
+                return;
+            }
+
+            container.innerHTML = wrongAnswers.map(qa => `
+                <div class="wrong-answer-item">
+                    <div class="wrong-answer-text">${qa.question}</div>
+                    <div style="margin-top: 0.5rem;">
+                        <strong>Your answer:</strong> ${qa.selected}<br>
+                        <strong>Correct answer:</strong> ${qa.correct}
+                    </div>
+                    ${qa.explanation ? `<div style="margin-top: 0.5rem;"><strong>Explanation:</strong> ${qa.explanation}</div>` : ''}
+                    ${qa.memoryHook ? `<div class="wrong-answer-hook">💡 ${qa.memoryHook}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function saveToBankFromReview() {
+            const review = state.currentReview;
+            const entries = [];
+
+            review.answers.forEach((answer, idx) => {
+                if (!answer.isCorrect) {
+                    const q = review.questions[idx];
+                    entries.push({
+                        question: q.question,
+                        questionSnippet: q.question.substring(0, 80) + '...',
+                        domain: q.domain,
+                        difficulty: q.difficulty,
+                        correctAnswer: q.correctAnswer,
+                        explanation: q.explanation,
+                        memoryHook: q.memoryHook,
+                        selected: answer.selected,
+                        attempts: 1,
+                        status: 'active'
+                    });
+                }
+            });
+
+            if (entries.length === 0) {
+                alert('No wrong answers to save!');
+                return;
+            }
+
+            try {
+                await fetch('/api/bank/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        entries,
+                        date: new Date().toISOString().split('T')[0]
+                    })
+                });
+                alert('Saved to bank!');
+                state.bank.push(...entries);
+            } catch (error) {
+                console.error('Error saving to bank:', error);
+                alert('Error saving to bank');
+            }
+        }
+
+        // Bank
+        function renderBank() {
+            renderBankFilters();
+            filterBank();
+        }
+
+        function renderBankFilters() {
+            const domainSelect = document.getElementById('bankDomainFilter');
+            domainSelect.innerHTML = '<option value="">All Domains</option>' +
+                domains.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+        }
+
+        function filterBank() {
+            const searchText = document.getElementById('bankSearch').value.toLowerCase();
+            const domainFilter = document.getElementById('bankDomainFilter').value;
+            const difficultyFilter = document.getElementById('bankDifficultyFilter').value;
+            const statusFilter = document.getElementById('bankStatusFilter').value;
+
+            let filtered = state.bank;
+
+            if (searchText) {
+                filtered = filtered.filter(e =>
+                    (e.question || e.questionSnippet).toLowerCase().includes(searchText)
+                );
+            }
+
+            if (domainFilter) {
+                filtered = filtered.filter(e => e.domain === domainFilter);
+            }
+
+            if (difficultyFilter) {
+                filtered = filtered.filter(e => e.difficulty === difficultyFilter);
+            }
+
+            if (statusFilter) {
+                filtered = filtered.filter(e => e.status === statusFilter);
+            }
+
+            renderBankEntries(filtered);
+        }
+
+        function renderBankEntries(entries) {
+            const container = document.getElementById('bankEntries');
+
+            if (entries.length === 0) {
+                container.innerHTML = '<p class="text-muted">No entries match your filters.</p>';
+                return;
+            }
+
+            container.innerHTML = entries.map((entry, idx) => `
+                <div class="card bank-entry" onclick="toggleBankDetails(${idx})">
+                    <div class="bank-entry-text">${entry.questionSnippet || entry.question}</div>
+                    <div class="bank-entry-badges">
+                        <span class="badge badge-domain">${entry.domain}</span>
+                        <span class="badge badge-${entry.difficulty}">${entry.difficulty}</span>
+                        <span class="badge badge-${entry.status || 'active'}">${entry.status || 'active'}</span>
+                    </div>
+                    <div class="bank-entry-meta">
+                        Attempts: ${entry.attempts || 1} | Last reviewed: ${entry.lastReviewed || 'Never'}
+                    </div>
+                    <div class="bank-entry-details" id="bank-details-${idx}">
+                        <div><strong>Question:</strong> ${entry.question}</div>
+                        <div style="margin-top: 1rem;"><strong>Explanation:</strong> ${entry.explanation}</div>
+                        ${entry.memoryHook ? `<div style="margin-top: 1rem;"><strong>Memory Hook:</strong> ${entry.memoryHook}</div>` : ''}
+                        <button class="btn btn-success" style="margin-top: 1rem; width: 100%;" onclick="markMastered('${idx}', event)">Mark as Mastered</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleBankDetails(idx) {
+            const details = document.getElementById(`bank-details-${idx}`);
+            details.classList.toggle('show');
+        }
+
+        function markMastered(idx, event) {
+            event.stopPropagation();
+            const entry = state.bank[idx];
+            entry.status = 'mastered';
+            filterBank();
+        }
+
+        // Settings
+        function renderSettings() {
+            document.getElementById('difficultyMode').value = state.settings.difficultyMode;
+            document.getElementById('associateSlider').value = state.settings.mixedDistribution.associate;
+            document.getElementById('professionalSlider').value = state.settings.mixedDistribution.professional;
+            document.getElementById('expertSlider').value = state.settings.mixedDistribution.expert;
+            document.getElementById('dailyQuestions').value = state.settings.dailyQuestions;
+            document.getElementById('weakDomainBoost').checked = state.settings.weakDomainBoost;
+            document.getElementById('darkModeToggle').checked = state.darkMode;
+
+            updateSliderDisplay();
+        }
+
+        function updateSliders(changedSlider) {
+            const associate = parseInt(document.getElementById('associateSlider').value);
+            const professional = parseInt(document.getElementById('professionalSlider').value);
+            const expert = parseInt(document.getElementById('expertSlider').value);
+
+            const total = associate + professional + expert;
+            const diff = total - 100;
+
+            if (changedSlider === 'associate') {
+                if (diff > 0) {
+                    if (professional >= diff) {
+                        document.getElementById('professionalSlider').value = professional - diff;
+                    } else {
+                        document.getElementById('expertSlider').value = Math.max(0, expert - (diff - professional));
+                        document.getElementById('professionalSlider').value = 0;
+                    }
+                }
+            }
+
+            updateSliderDisplay();
+        }
+
+        function updateSliderDisplay() {
+            const associate = parseInt(document.getElementById('associateSlider').value);
+            const professional = parseInt(document.getElementById('professionalSlider').value);
+            const expert = parseInt(document.getElementById('expertSlider').value);
+
+            document.getElementById('associateValue').textContent = associate + '%';
+            document.getElementById('professionalValue').textContent = professional + '%';
+            document.getElementById('expertValue').textContent = expert + '%';
+
+            const sum = associate + professional + expert;
+            document.getElementById('sliderSum').textContent = 'Sum: ' + sum + '%';
+        }
+
+        async function saveSettings(event) {
+            event.preventDefault();
+
+            state.settings.difficultyMode = document.getElementById('difficultyMode').value;
+            state.settings.mixedDistribution.associate = parseInt(document.getElementById('associateSlider').value);
+            state.settings.mixedDistribution.professional = parseInt(document.getElementById('professionalSlider').value);
+            state.settings.mixedDistribution.expert = parseInt(document.getElementById('expertSlider').value);
+            state.settings.dailyQuestions = parseInt(document.getElementById('dailyQuestions').value);
+            state.settings.weakDomainBoost = document.getElementById('weakDomainBoost').checked;
+
+            const shouldBeDark = document.getElementById('darkModeToggle').checked;
+            if (shouldBeDark !== state.darkMode) {
+                state.darkMode = shouldBeDark;
+                localStorage.setItem('darkMode', state.darkMode);
+                applyTheme();
+            }
+
+            try {
+                await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(state.settings)
+                });
+                alert('Settings saved!');
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                alert('Error saving settings');
+            }
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

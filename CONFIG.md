@@ -160,6 +160,37 @@ daily_quiz_questions: 8
 
 Number of questions per daily session. Typical: 5-10.
 
+### Difficulty Mode
+
+```yaml
+difficulty_mode: "mixed"
+```
+
+Options:
+- `"associate"` — Recall and identification. "What is…" / "Which of the following…"
+- `"professional"` — Application and analysis. Scenario-based. "An organization discovers… what should they do first?"
+- `"expert"` — Synthesis and evaluation. Multi-layered scenarios with competing priorities. "A CISO must balance… which approach BEST addresses…"
+- `"mixed"` — A blend of all three tiers (recommended). Distribution below.
+
+### Mixed Mode Distribution
+
+```yaml
+difficulty_distribution:
+  associate: 0.20
+  professional: 0.60
+  expert: 0.20
+```
+
+In mixed mode, 20% of questions are Associate, 60% Professional, 20% Expert. This mirrors the real CISSP exam, which skews toward scenario-based reasoning. Adjust as needed — for example, early in your studies you might want `associate: 0.50, professional: 0.40, expert: 0.10`.
+
+### Adaptive Difficulty for Weak Domains
+
+```yaml
+weak_domain_difficulty_boost: true
+```
+
+When enabled, domains where your accuracy is below 70% automatically get harder questions (one tier up). The idea: if you're getting Associate-level questions wrong, you're not ready for harder ones, so it stays. If you're acing Associate but failing Professional, it pushes you to Expert to build deeper understanding.
+
 ### Review Quiz Settings
 
 ```yaml
@@ -170,6 +201,7 @@ weekly_review_day: friday
 Weekly review quiz has 40 questions (ISC2 standard), weighted by:
 - Domain importance (ISC2 exam weight)
 - Your weakness areas (from WRONG-ANSWER-BANK)
+- Difficulty tier (stronger domains get harder questions)
 
 ---
 
@@ -249,6 +281,7 @@ enable_transcription: true
 transcription_tool: "macwhisper"
 
 daily_quiz_questions: 8
+difficulty_mode: "mixed"
 generate_audio: true
 ```
 
@@ -264,6 +297,7 @@ enable_transcription: false
 transcription_tool: "none"
 
 daily_quiz_questions: 5
+difficulty_mode: "associate"    # Start easy, ramp up as you gain confidence
 generate_audio: true
 ```
 
@@ -279,6 +313,7 @@ enable_transcription: true
 transcription_tool: "whisper-cli"
 
 daily_quiz_questions: 10
+difficulty_mode: "expert"       # Advanced — for students close to exam day
 generate_audio: false
 ```
 
@@ -322,6 +357,9 @@ You don't *need* CONFIG.md to get started—just run DAILY-PROMPT.md and the sys
 | `enable_transcription` | Use lecture transcripts? | false |
 | `transcription_tool` | Which transcription tool | none |
 | `daily_quiz_questions` | Questions per session | 8 |
+| `difficulty_mode` | Question difficulty tier | mixed |
+| `difficulty_distribution` | Mix ratio (associate/professional/expert) | 20/60/20 |
+| `weak_domain_difficulty_boost` | Auto-upgrade difficulty for weak domains? | true |
 | `generate_audio` | Create TTS study audio? | true |
 | `weekly_review_day` | Day for 40Q review | friday |
 
