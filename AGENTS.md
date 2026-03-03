@@ -19,6 +19,7 @@ A modular CISSP exam prep system. Supports two modes: bootcamp (fixed Mon–Sat 
 | `materials/` | Student's PDFs, PPTs, study guides (bring your own) | When configured |
 | `transcripts/` | Lecture transcripts if recording classes | When configured |
 | `notes/` | Auto-generated study outputs per session | Written by system |
+| `web/index.html` | Standalone study dashboard — CAT-adaptive quizzing, bank sync, homework flow. Open in any browser. | On demand |
 
 ## Action Boundaries
 
@@ -32,6 +33,8 @@ A modular CISSP exam prep system. Supports two modes: bootcamp (fixed Mon–Sat 
 - Update WRONG-ANSWER-BANK.md using section-based overwrite (never raw append)
 - Recalculate the Summary table from actual entries after every bank update
 - Stop and report if a file is missing, corrupted, or context is running low
+- Track mastery state — update Mastered/Times Wrong/Last Tested fields when re-asking bank questions
+- Apply CAT-adaptive difficulty when configured — adjust question tier based on running domain accuracy
 
 ### Ask first
 - Skip any phase (explain what's missing, suggest alternatives, let the student decide)
@@ -66,6 +69,8 @@ Bank total: [n] entries across [n] sessions
 Domain weakness: [top 2-3 domains by wrong count × exam weight]
 Confidence: [n] answers marked "guessing" that were correct
 Files written: [list]
+Mastery: [n] concepts mastered this session, [n] still weak
+CAT Levels: D1=[level], D2=[level], ... D8=[level]
 ```
 
 ## What Would Surprise You
@@ -79,6 +84,8 @@ Files written: [list]
 - Memory hooks are pedagogically critical — make them vivid, specific, and accurate. Bad hooks are worse than no hooks.
 - Difficulty tiers are: Associate (recall/identification), Professional (scenario-based application), Expert (synthesis with competing priorities). Questions at different tiers are conceptually different, not just harder wording of the same question.
 - When updating the bank, always include the Difficulty field per entry and recalculate the per-tier columns in the Summary table.
+- The web UI (web/index.html) is self-contained — all 240 questions are embedded. No server needed.
+- Bank entries now track mastery state (Mastered/Times Wrong/Last Tested). Update these fields during review sessions.
 
 ## Contributing
 

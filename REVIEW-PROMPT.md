@@ -37,6 +37,21 @@ Apply difficulty tiers from CONFIG.md:
 
 Source questions by priority: configured materials → transcripts → training knowledge. Vary types: definition, scenario, best practice, comparison, multi-step reasoning.
 
+**CAT-Adaptive Difficulty Within Review:**
+- Read the bank's Summary table for per-domain accuracy
+- Strong domains (>80% accuracy): push questions to Expert tier. If the student gets these right, mark concept as "mastered" in the bank.
+- Medium domains (60-80%): keep at Professional tier
+- Weak domains (<60%): start at Associate tier to build confidence, then gradually increase
+- Every 5 questions, recalculate difficulty based on session performance (mini-CAT)
+- After each re-asked question the student gets RIGHT: update that entry in the bank — set Mastered to "Yes"
+- Report "CAT Level" per domain at end of review
+
+**Mastery Tracking:**
+When re-asking a question from the bank that the student gets correct:
+- Note: "✓ Mastered — you got this right after previously missing it"
+- Track which concepts moved from "wrong" to "mastered" during this session
+- In the final report, list all newly mastered concepts separately
+
 ### QUIZ FORMAT
 
 Present one question at a time: "Question [n]/40 | Domain [x] | [Associate/Professional/Expert]"

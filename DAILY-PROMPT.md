@@ -47,6 +47,14 @@ Apply difficulty tier from CONFIG.md:
 - Professional = application/analysis (scenario-based, "What should the org do first?")
 - Expert = synthesis/evaluation (multi-layered competing priorities, "Which approach BEST…")
 
+**CAT-Adaptive Mode (if difficulty_mode is "cat" or mode is "cat"):**
+Track per-domain accuracy during this session. Every 5 questions, recalculate:
+- Domain accuracy >80% → shift to 70% Expert, 20% Professional, 10% Associate
+- Domain accuracy 60-80% → keep default mix (20/60/20)
+- Domain accuracy <60% → shift to 10% Expert, 20% Professional, 70% Associate
+Weight question selection by ISC2 exam weights: D1=16%, D3/D4/D5/D7=13%, D6=12%, D2/D8=10%.
+Report "CAT Level" per domain at end of quiz.
+
 **Step 3 — Run the daily quiz**
 Present questions one at a time. Format: "Question [n] of [total] | Domain [x] | [Associate/Professional/Expert]" followed by four choices. Student replies with just the letter (A/B/C/D). After each answer:
 - Say right or wrong
@@ -67,7 +75,31 @@ Read the bank. Verify the Summary table exists and is parseable. Use section-bas
 **Step 6 — Generate TTS-ready text (if enabled)**
 If CONFIG.generate_audio is true, create a plain text file the student can paste into TTS tools. Natural spoken sentences, pauses between topics, no markdown. Save to notes/. This is text for external TTS tools, not audio files.
 
-**Step 7 — Summary and session trace**
+**Step 7 — Export for Web UI (optional)**
+If the student uses the web-based study dashboard (web/index.html), output a JSON block they can paste into the Bank Sync tab:
+
+```json
+{
+  "date": "[today]",
+  "day": "[day of week]",
+  "domains": ["domain1", "domain2"],
+  "score": { "correct": X, "total": Y },
+  "wrongAnswers": [
+    {
+      "question": "[full question text]",
+      "domain": "[domain name]",
+      "difficulty": "[tier]",
+      "correct": "[correct answer text]",
+      "explanation": "[why wrong]",
+      "memoryHook": "[memory hook]",
+      "source": "cowork-session"
+    }
+  ]
+}
+```
+This bridges the Cowork study session with the standalone web UI for progress tracking across both tools.
+
+**Step 8 — Summary and session trace**
 Show: score, accuracy, domains covered, weak areas, next steps. Then output the session trace as defined in AGENTS.md.
 
 ### MEMORY HOOKS

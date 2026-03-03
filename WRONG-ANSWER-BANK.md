@@ -10,17 +10,17 @@ This file tracks every question you answer incorrectly across all study sessions
 
 Domain counts update automatically as you study. Use this to see where your weak areas are at a glance.
 
-| Domain | Wrong Answers | Associate | Professional | Expert | Accuracy |
-|--------|---------------|-----------|--------------|--------|----------|
-| Security and Risk Management | 0 | 0 | 0 | 0 | — |
-| Asset Security | 0 | 0 | 0 | 0 | — |
-| Security Architecture and Engineering | 0 | 0 | 0 | 0 | — |
-| Communication and Network Security | 0 | 0 | 0 | 0 | — |
-| Identity and Access Management | 0 | 0 | 0 | 0 | — |
-| Security Assessment and Testing | 0 | 0 | 0 | 0 | — |
-| Security Operations | 0 | 0 | 0 | 0 | — |
-| Software Development Security | 0 | 0 | 0 | 0 | — |
-| **TOTAL** | **0** | **0** | **0** | **0** | **—** |
+| Domain | Wrong Count | Mastered | Exam Weight | Review Priority |
+|--------|-------------|----------|-------------|-----------------|
+| Security and Risk Management | 0 | 0 | 15% | — |
+| Asset Security | 0 | 0 | 10% | — |
+| Security Architecture and Engineering | 0 | 0 | 12% | — |
+| Communication and Network Security | 0 | 0 | 14% | — |
+| Identity and Access Management | 0 | 0 | 13% | — |
+| Security Assessment and Testing | 0 | 0 | 12% | — |
+| Security Operations | 0 | 0 | 16% | — |
+| Software Development Security | 0 | 0 | 8% | — |
+| **TOTAL** | **0** | **0** | **100%** | **—** |
 
 ---
 
@@ -55,8 +55,9 @@ When the system adds a wrong answer, it will look like this:
 - **Difficulty**: [Associate / Professional / Expert]
 - **Explanation**: [2-3 sentences explaining why the correct answer is right]
 - **Memory Hook**: [Vivid way to remember this]
-- **Attempts**: 1
-- **Last Reviewed**: [Date]
+- **Mastered**: No
+- **Times Wrong**: 1
+- **Last Tested**: [Date]
 - **Source**: [materials / transcript / Claude knowledge]
 - **Status**: Active
 ```
@@ -76,8 +77,9 @@ These are examples to show you the format. Your actual entries will replace thes
 - **Difficulty**: Associate
 - **Explanation**: Least Privilege is the security principle of giving users only what they NEED to do their job. Defense in Depth is about layering multiple security controls. Least Privilege is about minimizing access; Defense in Depth is about redundant protections.
 - **Memory Hook**: "Least = Minimum. Give users the LEAST they need, not what they want. Don't trust them with extras."
-- **Attempts**: 1
-- **Last Reviewed**: 2026-03-03
+- **Mastered**: No
+- **Times Wrong**: 1
+- **Last Tested**: 2026-03-03
 - **Source**: Claude knowledge
 - **Status**: Active
 
@@ -90,8 +92,9 @@ These are examples to show you the format. Your actual entries will replace thes
 - **Difficulty**: Professional
 - **Explanation**: Risk is a function of three factors: whether a threat exists, whether a vulnerability allows it to be exploited, and what the impact would be. All three must be present for risk to exist. If any is zero, risk is zero.
 - **Memory Hook**: "Think of a locked door. You need: 1) a criminal (threat), 2) a broken lock (vulnerability), 3) something valuable inside (asset value). Miss one? No risk."
-- **Attempts**: 1
-- **Last Reviewed**: 2026-03-03
+- **Mastered**: No
+- **Times Wrong**: 1
+- **Last Tested**: 2026-03-03
 - **Source**: Claude knowledge
 - **Status**: Active
 
@@ -104,8 +107,9 @@ These are examples to show you the format. Your actual entries will replace thes
 - **Difficulty**: Associate
 - **Explanation**: AES comes in three variants: AES-128 (128-bit keys), AES-192 (192-bit keys), and AES-256 (256-bit keys). The number in the name refers to key length, not block size. AES-256 is the strongest variant recommended for top-secret data.
 - **Memory Hook**: "AES-256 = 256-bit keys. 256 is the GOLD STANDARD. Anything less is weaker. 'AES-256 for secrets!' Remember: bigger number = stronger encryption."
-- **Attempts**: 2
-- **Last Reviewed**: 2026-03-04
+- **Mastered**: No
+- **Times Wrong**: 2
+- **Last Tested**: 2026-03-04
 - **Source**: Claude knowledge
 - **Status**: Active
 

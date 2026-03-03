@@ -200,11 +200,14 @@ All 240 questions (8 domains × 3 difficulty tiers) are embedded directly in the
 
 ### Features
 
-- **Dashboard** — domain accuracy bars, difficulty breakdown, streak counter, progress stats
-- **Quiz Mode** — filter by domain and difficulty, set question count, choose random/weak-first/sequential mode. Interactive answer selection with instant feedback, explanations, and memory hooks
-- **Wrong Answer Review** — see every question you've missed, sorted by frequency, with correct answers and explanations
-- **Quiz History** — date, score, question count, and time for every quiz you've taken
-- **Export/Import** — back up your progress as JSON, move between devices
+- **Dashboard** — domain accuracy bars with CAT level badges, difficulty breakdown, streak counter, last session summary
+- **Tonight's Study** — select your bootcamp day, get quizzed on tonight's domains only, export results for your bank
+- **Quiz Mode** — filter by domain and difficulty, set question count, choose Random / Weak-First / CAT Adaptive mode
+- **Re-Quiz Wrong Answers** — practice only questions you've previously missed, with scrambled answer order and mastery tracking
+- **Bank Sync** — paste your WRONG-ANSWER-BANK.md to import wrong answers from Cowork sessions into the web UI
+- **History** — date, score, question count, and time for every session
+- **CAT-Adaptive Difficulty** — mirrors the real CISSP exam: strong domains get harder questions, weak domains get easier ones
+- **Export/Import** — back up progress as JSON, move between devices, export results in bank-compatible markdown
 - **Mobile-responsive** — works on your phone's browser too
 - **Dark mode** — easy on the eyes for late-night study
 
