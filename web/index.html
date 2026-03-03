@@ -1095,11 +1095,11 @@
                 }
                 
                 const domains = BOOTCAMP_SCHEDULE[day];
-                let html = '<p><strong>Tonight's Domains:</strong></p><ul style="margin-left: 1rem;">';
+                let html = '<p><strong>Tonight\'s Domains:</strong></p><ul style="margin-left: 1rem;">';
                 domains.forEach(d => {
                     html += '<li>' + d + ' (' + DOMAINS[d] + ')</li>';
                 });
-                html += '</ul><p class="mt-2 text-muted">You'll be asked 10 questions from these domains.</p>';
+                html += '</ul><p class="mt-2 text-muted">You\'ll be asked 10 questions from these domains.</p>';
                 domainDiv.innerHTML = html;
             }
 
@@ -1275,10 +1275,10 @@
                     options.forEach((option, idx) => {
                         const isSelected = this.quizAnswers[qIndex] === option;
                         const selectedClass = isSelected ? 'selected' : '';
-                        const escapedOption = option.replace(/'/g, "\'");
+                        const escapedOption = option.replace(/'/g, "\\\'");
                         
                         html += '<label class="option ' + selectedClass + '">' +
-                            '<input type="radio" name="answer_' + qIndex + '" value="' + escapedOption + '" onchange="app.selectAnswer(' + qIndex + ', '' + escapedOption + '')">' +
+                            '<input type="radio" name="answer_' + qIndex + '" value="' + escapedOption + '" onchange="app.selectAnswer(' + qIndex + ', \'' + escapedOption + '\')">' +
                             option +
                             '</label>';
                     });
@@ -1478,12 +1478,7 @@
 
             importBank() {
                 const content = document.getElementById('bankInput').value;
-                const regex = /### Q(\d+) \| Domain (\d+) \|.*?\*\*Question:\*\*\s*(.+?)
-.*?\*\*Correct Answer:\*\*\s*(.+?)
-.*?\*\*Concept:\*\*\s*(.+?)
-.*?\*\*Why Wrong:\*\*\s*(.+?)
-.*?\*\*Memory Hook:\*\*\s*(.+?)
-/gs;
+                const regex = /### Q(\d+) \| Domain (\d+) \|.*?\*\*Question:\*\*\s*(.+?)\n.*?\*\*Correct Answer:\*\*\s*(.+?)\n.*?\*\*Concept:\*\*\s*(.+?)\n.*?\*\*Why Wrong:\*\*\s*(.+?)\n.*?\*\*Memory Hook:\*\*\s*(.+?)\n/gs;
 
                 let match;
                 let imported = 0;
@@ -1563,34 +1558,20 @@
                     .filter(w => w.source === 'web-quiz' && w.lastTested === new Date().toISOString().split('T')[0])
                     .slice(-lastSession.total + lastSession.correct);
 
-                let markdown = '## ' + new Date().toLocaleDateString() + ' — Domains ' + lastSession.domains.join(', ') + '
-';
-                markdown += '<!-- Generated: ' + new Date().toLocaleDateString() + ' | Entries: ' + wrongAnswersForSession.length + ' | Domains: ' + lastSession.domains.join(', ') + ' -->
-
-';
+                let markdown = '## ' + new Date().toLocaleDateString() + ' — Domains ' + lastSession.domains.join(', ') + '\n';
+                markdown += '<!-- Generated: ' + new Date().toLocaleDateString() + ' | Entries: ' + wrongAnswersForSession.length + ' | Domains: ' + lastSession.domains.join(', ') + ' -->\n\n';
 
                 wrongAnswersForSession.forEach(w => {
-                    markdown += '### Q | ' + DOMAINS[w.domain] + '
-';
-                    markdown += '**Question:** ' + w.question + '
-';
-                    markdown += '**Correct Answer:** ' + w.correct + '
-';
-                    markdown += '**Difficulty:** ' + w.difficulty + '
-';
-                    markdown += '**Concept:** [concept]
-';
-                    markdown += '**Why Wrong:** ' + w.explanation + '
-';
-                    markdown += '**Memory Hook:** ' + (w.memoryHook || '[Your memory hook]') + '
-';
-                    markdown += '**Mastered:** No
-';
-                    markdown += '**Times Wrong:** 1
-';
-                    markdown += '**Last Tested:** ' + new Date().toISOString().split('T')[0] + '
-
-';
+                    markdown += '### Q | ' + DOMAINS[w.domain] + '\n';
+                    markdown += '**Question:** ' + w.question + '\n';
+                    markdown += '**Correct Answer:** ' + w.correct + '\n';
+                    markdown += '**Difficulty:** ' + w.difficulty + '\n';
+                    markdown += '**Concept:** [concept]\n';
+                    markdown += '**Why Wrong:** ' + w.explanation + '\n';
+                    markdown += '**Memory Hook:** ' + (w.memoryHook || '[Your memory hook]') + '\n';
+                    markdown += '**Mastered:** No\n';
+                    markdown += '**Times Wrong:** 1\n';
+                    markdown += '**Last Tested:** ' + new Date().toISOString().split('T')[0] + '\n\n';
                 });
 
                 this.showExportModal(markdown);
@@ -1602,11 +1583,11 @@
                 modal.innerHTML = '<div class="modal-content">' +
                     '<h2>Export Results for WRONG-ANSWER-BANK.md</h2>' +
                     '<div class="code-block" style="position: relative; margin: 1rem 0;">' +
-                    '<button class="copy-btn" onclick="this.textContent='Copied!'; setTimeout(() => this.textContent='Copy', 2000); navigator.clipboard.writeText(document.querySelector('.code-content').textContent)">Copy</button>' +
+                    '<button class="copy-btn" onclick="this.textContent=\'Copied!\'; setTimeout(() => this.textContent=\'Copy\', 2000); navigator.clipboard.writeText(document.querySelector(\'.code-content\').textContent)">Copy</button>' +
                     '<div class="code-content">' + content + '</div>' +
                     '</div>' +
                     '<div class="modal-footer">' +
-                    '<button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Close</button>' +
+                    '<button class="btn btn-secondary" onclick="this.closest(\'.modal\').remove()">Close</button>' +
                     '</div>' +
                     '</div>';
                 document.body.appendChild(modal);
