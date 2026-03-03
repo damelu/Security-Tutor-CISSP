@@ -184,34 +184,29 @@ This kit focuses on the domains you configure, not exam-day simulation. For time
 | `materials/` | Your study materials (PDFs, PPTs) |
 | `transcripts/` | Your lecture transcripts (if using) |
 | `notes/` | Auto-generated daily study notes (created by system) |
-| `web/` | Local web UI (Flask server + single-page app) |
-| `web/questions.json` | Pre-built question bank (240 questions, 3 tiers) |
+| `web/index.html` | Local web UI — open in any browser, no server needed |
+| `web/questions.json` | Pre-built question bank (240 questions, 3 tiers) — also embedded in index.html |
 | `OBSIDIAN-SETUP.md` | Guide: integrate with Obsidian for visual study + quiz generation |
 
 ## Local Web UI
 
-The kit includes a browser-based study interface. No API key required — it uses a pre-built question bank of 240 questions across all 8 domains and 3 difficulty tiers.
+The kit includes a browser-based study interface. No server, no install, no API key — just open a single HTML file.
 
 ### Setup
 
-```bash
-cd web
-pip install -r requirements.txt
-python server.py
-```
+Open `web/index.html` in any browser. That's it.
 
-Open http://localhost:5000 in your browser.
+All 240 questions (8 domains × 3 difficulty tiers) are embedded directly in the file. Progress is saved in your browser's local storage and can be exported/imported as JSON.
 
 ### Features
 
-- **Dashboard** — domain accuracy grid, difficulty breakdown, recent wrong answers, progress stats
-- **Quiz Mode** — select domains, difficulty, and question count. Interactive A/B/C/D buttons with instant feedback, explanations, and memory hooks
-- **Review Mode** — 40-question weighted quiz using the same algorithm as REVIEW-PROMPT.md (ISC2 weights + weakness boost)
-- **Bank Viewer** — search and filter your wrong answer bank by domain, difficulty, or status
-- **Settings** — configure difficulty mode, mixed distribution, dark mode
+- **Dashboard** — domain accuracy bars, difficulty breakdown, streak counter, progress stats
+- **Quiz Mode** — filter by domain and difficulty, set question count, choose random/weak-first/sequential mode. Interactive answer selection with instant feedback, explanations, and memory hooks
+- **Wrong Answer Review** — see every question you've missed, sorted by frequency, with correct answers and explanations
+- **Quiz History** — date, score, question count, and time for every quiz you've taken
+- **Export/Import** — back up your progress as JSON, move between devices
 - **Mobile-responsive** — works on your phone's browser too
-
-The web UI reads and writes the same WRONG-ANSWER-BANK.md file as the prompt system. They share one source of truth.
+- **Dark mode** — easy on the eyes for late-night study
 
 ---
 
