@@ -182,11 +182,108 @@ This kit focuses on the domains you configure, not exam-day simulation. For time
 | `transcripts/` | Your lecture transcripts (if using) |
 | `notes/` | Auto-generated daily study notes (created by system) |
 
+## Study on the Go
+
+You don't have to be at your laptop to study. The kit generates review material you can use on your commute, at the gym, or walking the dog. Here are your options — pick whatever fits.
+
+### At Your Laptop (Nightly Homework)
+
+This is the core workflow. Paste the daily prompt into Cowork (or your IDE), answer questions, review what you got wrong. Everything below builds on this session's output.
+
+**With voice (hands-free studying):** Open the Claude desktop app or ChatGPT voice mode. Start a conversation, paste or upload your `WRONG-ANSWER-BANK.md`, and say: *"Quiz me on my wrong answers. Read each question aloud, wait for me to answer, then explain."* You can go back and forth verbally — no typing. Works well while cooking, stretching, or winding down.
+
+**Without voice:** The normal flow. Paste the prompt, type your answers, read the explanations. Best for focused deep study.
+
+### On Your Phone (Commute / Walking)
+
+**Option 1 — NotebookLM (best for passive listening)**
+Upload your nightly summary or `WRONG-ANSWER-BANK.md` to [notebooklm.google.com](https://notebooklm.google.com). Tap "Audio Overview" and it generates a 5-10 minute podcast-style conversation where two AI hosts discuss your weak areas. Download the audio or listen in the NotebookLM app (iOS). This is the highest-quality option for commute listening — the conversational format helps retention more than a flat readout.
+
+> **Power move:** If you connect the [NotebookLM MCP server](https://github.com/PleasePrompto/notebooklm-mcp) (see Optional Integrations below), Claude can query your NotebookLM notebook directly during study sessions — no tab-switching.
+
+**Option 2 — Claude or ChatGPT voice on your phone**
+Open the Claude iOS app (or ChatGPT). Upload `WRONG-ANSWER-BANK.md` from your files. Say: *"Quiz me verbally on these wrong answers. One at a time. Wait for me to answer before explaining."* Fully interactive — the AI reads, you answer aloud, it tells you if you're right and why. Works with AirPods while walking or driving.
+
+**Option 3 — iPhone Speak Screen (zero setup)**
+Sync your nightly notes via iCloud, open any `.md` or `.txt` file in Files, swipe down from the top with two fingers. iOS reads the file aloud. Robotic but functional. No extra apps needed.
+
+**Option 4 — macOS/Windows text-to-speech**
+
+*macOS:* System Settings → Accessibility → Spoken Content → enable "Speak Selection." Open any summary file, select all, press the shortcut. Or from Terminal: `say -f summary.md -o review.aiff` to save as audio.
+
+*Windows:* Open the summary in Microsoft Edge, right-click → "Read aloud." Or use Narrator: Settings → Accessibility → Narrator. PowerShell alternative: `Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak((Get-Content summary.md -Raw))`
+
+### Quick Reference
+
+| Method | Platform | Effort | Quality | Interactive? |
+|--------|----------|--------|---------|-------------|
+| NotebookLM Audio Overview | Any (web) | Low — upload file, click generate | Best — podcast-style conversation | No (listen only) |
+| Claude/ChatGPT voice | iOS, Android | Low — upload file, start talking | Great — natural voice | Yes — verbal Q&A |
+| iPhone Speak Screen | iOS | Zero — swipe gesture | Basic — robotic TTS | No |
+| macOS Speak Selection | macOS | Zero — keyboard shortcut | Basic — system voice | No |
+| Windows Read Aloud (Edge) | Windows | Zero — right-click menu | Decent — Edge voices | No |
+| ElevenLabs | Any (web) | Medium — paste text, download MP3 | Great — realistic voices | No |
+
+---
+
+## Optional: NotebookLM Integration
+
+The [NotebookLM MCP server](https://github.com/PleasePrompto/notebooklm-mcp) lets Claude query your NotebookLM notebooks directly during study sessions. This is optional — everything works without it.
+
+### What It Does
+
+Instead of tab-switching between Claude and NotebookLM, you upload your study materials to a NotebookLM notebook once, then Claude can ask it questions on your behalf. Useful if you've loaded official ISC2 guides, textbooks, or heavy PDFs into NotebookLM — Claude can pull citation-backed answers without re-reading the full documents every session.
+
+### Setup
+
+**Prerequisites:** Node.js (v5+), a Google account, Chrome browser.
+
+**Claude Code:**
+```bash
+claude mcp add notebooklm npx notebooklm-mcp@latest
+```
+
+**Codex:**
+```bash
+codex mcp add notebooklm -- npx notebooklm-mcp@latest
+```
+
+**VS Code:**
+```bash
+code --add-mcp '{"name":"notebooklm","command":"npx","args":["notebooklm-mcp@latest"]}'
+```
+
+**Cursor:** Add to `~/.cursor/mcp.json`:
+```json
+{
+  "mcpServers": {
+    "notebooklm": {
+      "command": "npx",
+      "args": ["-y", "notebooklm-mcp@latest"]
+    }
+  }
+}
+```
+
+After installing, tell Claude: *"Log me in to NotebookLM"* — a Chrome window opens for Google authentication. One-time setup.
+
+### Recommended Workflow
+
+1. Go to [notebooklm.google.com](https://notebooklm.google.com) and create a notebook called "CISSP Study"
+2. Upload your study materials (PDFs, slides, the study guide)
+3. Share the notebook (get the link)
+4. In Claude, say: *"Select my CISSP Study notebook"* — the MCP server connects
+5. During study sessions, Claude can now cross-reference your materials via NotebookLM instead of reading raw PDFs each time
+
+> **Note:** The MCP server uses browser automation. The authors recommend using a secondary Google account rather than your primary one. Audio Overview generation is not available through the MCP — you still generate audio manually at notebooklm.google.com.
+
+---
+
 ## Tips for Success
 
 1. **Daily consistency beats cramming** — 30 min/day > 5 hours once a week
 2. **Focus on wrong answers** — your wrong answer bank is your study guide
-3. **Use audio for review** — listen while commuting/exercising
+3. **Use audio for review** — listen while commuting/exercising (see Study on the Go above)
 4. **Rotate domains** — don't overstudy one domain; follow CONFIG.md schedule
 5. **Test with your materials** — if the system can extract questions from your PDFs, it's working
 
