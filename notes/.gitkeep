@@ -1,0 +1,13 @@
+# Auto-generated study notes and audio files appear here
+# Created by the daily prompt and review prompt
+#
+# Structure:
+# notes/
+# ├── daily-notes-2026-03-03.md
+# ├── daily-notes-2026-03-04.md
+# ├── review-quiz-2026-03-10.md
+# └── audio/
+#     ├── study-audio-2026-03-03.txt
+#     └── [MP3/WAV files if audio generation enabled]
+#
+# You don't need to create these; Claude generates them automatically.

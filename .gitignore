@@ -1,0 +1,34 @@
+# Ignore personal study notes and audio files
+notes/daily-notes-*.md
+notes/review-quiz-*.md
+notes/audio/
+
+# Ignore user-specific configuration backups
+CONFIG.backup.md
+
+# Ignore sensitive materials (if you add your own PDFs)
+materials/*.pdf
+materials/*.pptx
+materials/*.ppt
+
+# Ignore transcript backups
+transcripts/*.backup.txt
+
+# macOS
+.DS_Store
+*.swp
+
+# Python / Virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log

@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 damelu
+Copyright (c) 2026 CISSP Study Kit Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,16 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+ADDITIONAL NOTES:
+
+- This software is provided as-is for study purposes
+- CISSP is a registered trademark of ISC2 (International Information Systems Security Certification Consortium)
+- This kit is not affiliated with, endorsed by, or created by ISC2
+- Users are responsible for complying with ISC2's code of ethics and CISSP exam policies
+- Exam question content should be sourced from official ISC2 materials or created by Claude
+- Users may not reproduce verbatim content from ISC2 study materials without permission
+
+For ISC2 information and official CISSP resources, visit: https://www.isc2.org
