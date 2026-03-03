@@ -18,12 +18,12 @@ The system works perfectly without study materials—Claude can generate CISSP-s
 
 ## Requirements
 
-- **Claude desktop app** with Cowork mode — download from [claude.ai](https://claude.ai)
-  - Free Claude.com account works
-  - Paid account recommended for longer sessions
+- **Claude desktop app with Cowork mode** — download from [claude.ai](https://claude.ai) (free account works, paid recommended for longer sessions), **or** any IDE with AI agent support that can read and follow prompt files (e.g., Cursor, VS Code with Copilot, Windsurf, Codex). The kit assumes you have one of these set up and pointed at this folder.
 - **Your study materials** (optional): PDFs, PowerPoints, websites, or nothing
 - **A text editor** for CONFIG.md
 - **10-15 minutes per study day** for the daily prompt
+
+> **IDE users:** If your IDE supports AGENTS.md (Cursor, Copilot, Claude Code, Codex, etc.), the agent will automatically pick up the file map, action boundaries, and session trace format. Open this folder as your workspace, paste the daily prompt, and the agent handles the rest.
 
 ## Quick Start
 
