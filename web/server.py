@@ -33,14 +33,21 @@ def parse_config():
 
     try:
         content = config_file.read_text()
-        yaml_blocks = re.findall(r'```yaml\n(.*?)\n```', content, re.DOTALL)
+
+        # Strip the "Example Configurations" section — those blocks are illustrative, not active
+        content_main = content.split('## Example Configurations')[0] if '## Example Configurations' in content else content
+
+        yaml_blocks = re.findall(r'```yaml\n(.*?)\n```', content_main, re.DOTALL)
 
         config = {}
         for block in yaml_blocks:
             try:
                 parsed = yaml.safe_load(block)
                 if isinstance(parsed, dict):
-                    config.update(parsed)
+                    # Only set keys that haven't been set yet (first occurrence wins)
+                    for k, v in parsed.items():
+                        if k not in config:
+                            config[k] = v
             except yaml.YAMLError:
                 continue
 
@@ -50,14 +57,16 @@ def parse_config():
         return get_default_config()
 
 def get_default_config():
-    """Return sensible defaults."""
+    """Return sensible defaults matching CONFIG.md schema."""
     return {
-        'schedule_mode': 'adaptive',
-        'difficulty_mode': 'progressive',
-        'difficulty_distribution': [25, 50, 25],  # easy, medium, hard
-        'daily_quiz_questions': 10,
-        'generate_audio': False,
-        'weak_domain_difficulty_boost': 1.5,
+        'schedule_mode': 'bootcamp',
+        'difficulty_mode': 'mixed',
+        'difficulty_distribution': {'associate': 0.20, 'professional': 0.60, 'expert': 0.20},
+        'daily_quiz_questions': 8,
+        'generate_audio': True,
+        'weak_domain_difficulty_boost': True,
+        'review_quiz_questions': 40,
+        'weekly_review_day': 'friday',
     }
 
 def parse_wrong_answer_bank():
@@ -70,11 +79,20 @@ def parse_wrong_answer_bank():
         content = bank_file.read_text()
         entries = []
 
+        # Strip code blocks (templates) so we don't parse them as entries
+        content_no_code = re.sub(r'```.*?```', '', content, flags=re.DOTALL)
+
+        # Skip anything under "Example Entries" or "Template" headers
+        content_real = re.split(r'## (?:Example Entries|Template)', content_no_code)[0]
+
         # Parse entries: ### Entry N: [title]
         entry_pattern = r'### Entry \d+: (.+?)\n(.*?)(?=###|$)'
-        for match in re.finditer(entry_pattern, content, re.DOTALL):
+        for match in re.finditer(entry_pattern, content_real, re.DOTALL):
             title = match.group(1).strip()
             body = match.group(2).strip()
+            # Skip template placeholders
+            if '[Descriptive title]' in title or '[Full question text]' in body:
+                continue
 
             entry = {'title': title}
 
@@ -138,26 +156,36 @@ def api_config():
 @app.route('/api/questions')
 def api_questions():
     """Return questions from questions.json (filtered by domain/difficulty)."""
-    questions_file = MARKDOWN_DIR / 'questions.json'
+    questions_file = Path(__file__).parent / 'questions.json'
     if not questions_file.exists():
-        return jsonify([])
+        return jsonify({'domains': {}})
 
     try:
-        questions = json.loads(questions_file.read_text())
+        data = json.loads(questions_file.read_text())
 
-        # Filter by query params
-        domain = request.args.get('domain')
-        difficulty = request.args.get('difficulty')
+        # Flatten nested structure into a list if filters are requested
+        domain_filter = request.args.get('domain')
+        difficulty_filter = request.args.get('difficulty')
 
-        if domain:
-            questions = [q for q in questions if q.get('domain') == domain]
-        if difficulty:
-            questions = [q for q in questions if q.get('difficulty') == difficulty]
+        if domain_filter or difficulty_filter:
+            flat = []
+            for dname, dobj in data.get('domains', {}).items():
+                if domain_filter and dname != domain_filter:
+                    continue
+                for tier in ['associate', 'professional', 'expert']:
+                    if difficulty_filter and tier != difficulty_filter:
+                        continue
+                    for q in dobj.get(tier, []):
+                        q['domain'] = dname
+                        q['difficulty'] = tier
+                        flat.append(q)
+            return jsonify(flat)
 
-        return jsonify(questions)
+        # No filters — return the full nested structure
+        return jsonify(data)
     except Exception as e:
         print(f"Error reading questions.json: {e}")
-        return jsonify([])
+        return jsonify({'domains': {}})
 
 @app.route('/api/bank')
 def api_bank():
