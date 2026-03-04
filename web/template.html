@@ -1035,6 +1035,17 @@
                 <div class="help-box">
                     <div class="help-title">Your CISSP Study Hub</div>
                     This dashboard tracks your overall progress across all 8 CISSP domains. Your scores, accuracy, and adaptive difficulty level (Associate → Professional → Expert) update automatically after every quiz. <strong>Your progress auto-saves to this browser</strong> — just keep using the same browser and your data persists between sessions. Use "Backup to File" (top right) if you want to transfer progress to another device.
+                    <hr class="help-divider">
+                    <div class="help-title">Resuming Each Day with Your AI Tutor</div>
+                    This web UI is one piece of a larger study system. Each night you should also run a full AI-guided session that includes lecture analysis, homework quizzing, wrong-answer deep dives, and bank updates. Here's how:
+                    <ol>
+                        <li><strong>Open your course folder</strong> — In <strong>Cowork</strong>, click the folder icon and select your <code>CISSP Training 2026</code> folder (the one with AGENTS.md, STUDY-GUIDE.md, Student files, etc). In <strong>VS Code / Cursor</strong>, open that same folder as your workspace.</li>
+                        <li><strong>Start a new session</strong> — Open a new chat. Copy the prompt from <code>DAILY-PROMPT.md</code> and replace <code>[DAY]</code> with today (e.g., "Tuesday"). The AI reads AGENTS.md first, validates your files, then walks you through 5 phases.</li>
+                        <li><strong>The 5 nightly phases:</strong> Lecture Analysis (transcripts) → Homework Quiz (tonight's questions) → Wrong Answer Deep Dive (explanations + memory hooks) → Audio Generation (study audio) → Bank Update (WRONG-ANSWER-BANK.md).</li>
+                        <li><strong>Sync with this web UI:</strong> After your AI session updates WRONG-ANSWER-BANK.md, paste its contents into the "Bank Sync" tab here to import new wrong answers for re-quizzing.</li>
+                        <li><strong>For a quick review quiz</strong> without the full nightly flow, use the prompt from <code>REVIEW-PROMPT.md</code> instead — it generates a 20–30 question quiz weighted by your weakest domains.</li>
+                    </ol>
+                    The key files are <code>AGENTS.md</code> (system context the AI reads first), <code>DAILY-PROMPT.md</code> (nightly workflow), <code>REVIEW-PROMPT.md</code> (on-demand review), <code>STUDY-GUIDE.md</code> (schedule + homework), and <code>WRONG-ANSWER-BANK.md</code> (your running log of missed questions).
                 </div>
                 <div class="card">
                     <div class="card-header">Dashboard</div>
@@ -1084,10 +1095,12 @@
                     This tab contains your actual bootcamp homework questions — pulled directly from the Practice Exam PDF and PowerPoint slides for each night of class.
                     <div class="workflow-steps">
                         <div class="workflow-step"><span class="step-num">1</span><strong>Select tonight's day</strong> below to load the homework questions assigned for that class session.</div>
-                        <div class="workflow-step"><span class="step-num">2</span><strong>Take the quiz.</strong> Answer all questions. Your answers are scored at the end and wrong answers are saved automatically.</div>
-                        <div class="workflow-step"><span class="step-num">3</span><strong>Review results.</strong> After finishing, click "Export Results" to get your wrong answers formatted for the WRONG-ANSWER-BANK.md file.</div>
-                        <div class="workflow-step"><span class="step-num">4</span><strong>Re-quiz tomorrow.</strong> Come back to the "Re-Quiz Wrong" tab to drill the questions you missed until you master them.</div>
+                        <div class="workflow-step"><span class="step-num">2</span><strong>Take the quiz.</strong> Answer all questions. Your answers are scored at the end.</div>
+                        <div class="workflow-step"><span class="step-num">3</span><strong>Everything saves automatically.</strong> Wrong answers go straight to "Re-Quiz Wrong" and a <code>.md</code> file downloads to your computer for pasting into WRONG-ANSWER-BANK.md.</div>
+                        <div class="workflow-step"><span class="step-num">4</span><strong>Re-quiz tomorrow.</strong> Before starting new homework, open "Re-Quiz Wrong" first and drill last night's misses.</div>
                     </div>
+                    <hr class="help-divider">
+                    <strong>Using with your AI tutor:</strong> Open your <code>CISSP Training 2026</code> folder in Cowork or your IDE, start a new chat, and paste the prompt from <code>DAILY-PROMPT.md</code> (replacing [DAY]). The AI runs a full 5-phase session: lecture analysis → homework quiz → wrong-answer deep dive → audio study material → bank update. The downloaded <code>.md</code> file from this web UI can be appended to your WRONG-ANSWER-BANK.md for the AI to review.
                     <hr class="help-divider">
                     <strong>Schedule:</strong> Mon = Domains 1 & 2 · Tue = Domain 3 · Wed = Domains 3 & 4 · Thu = Domains 4, 5 & 6 · Fri = Domains 7 & 8
                 </div>
@@ -1944,7 +1957,8 @@
                     '</div>';
 
                 if (wrongIds && wrongIds.length > 0) {
-                    html += '<p class="text-muted">You have ' + wrongIds.length + ' question(s) to review. Use "Re-Quiz Wrong" tab to practice them again.</p>';
+                    html += '<p class="text-muted">You have ' + wrongIds.length + ' question(s) to review. They have been added to "Re-Quiz Wrong" automatically.</p>';
+                    html += '<p class="text-muted" style="margin-top: 0.5rem; font-size: 0.85rem;">A <code style="font-family: monospace; background: var(--surface-alt); padding: 0.15rem 0.4rem; border-radius: 4px;">wrong-answers-[date].md</code> file was also downloaded to your computer for pasting into WRONG-ANSWER-BANK.md.</p>';
                 } else {
                     html += '<p class="text-success" style="color: var(--success);">Perfect score! Congratulations!</p>';
                 }
@@ -1953,6 +1967,11 @@
                 document.getElementById('resultsContent').innerHTML = html;
                 document.getElementById('quizModal').classList.remove('active');
                 document.getElementById('resultsModal').classList.add('active');
+
+                // Auto-download wrong answers as .md file
+                if (wrongIds && wrongIds.length > 0) {
+                    this.autoExportWrongAnswers(wrongIds);
+                }
             }
 
             updateRewrongStatus() {
@@ -2147,6 +2166,41 @@
                 });
 
                 this.showExportModal(markdown);
+            }
+
+            autoExportWrongAnswers(wrongIds) {
+                if (!wrongIds || wrongIds.length === 0) return;
+
+                const today = new Date().toISOString().split('T')[0];
+                const lastSession = this.state.quizHistory[this.state.quizHistory.length - 1];
+                const domainLabel = lastSession ? lastSession.domains.join(', ') : 'Mixed';
+
+                let markdown = '## ' + new Date().toLocaleDateString() + ' — ' + domainLabel + '\n';
+                markdown += '<!-- Auto-exported: ' + today + ' | Entries: ' + wrongIds.length + ' -->\n\n';
+
+                wrongIds.forEach(wrongId => {
+                    const w = this.state.wrongAnswers[wrongId];
+                    if (!w) return;
+                    markdown += '### Q' + (w.id || '') + ' | ' + (DOMAINS[w.domain] || 'Unknown') + ' | ' + (w.domain || 'Unknown') + '\n';
+                    markdown += '**Question:** ' + w.question + '\n';
+                    markdown += '**Correct Answer:** ' + w.correct + '\n';
+                    markdown += '**Difficulty:** ' + (w.difficulty || 'course') + '\n';
+                    markdown += '**Concept:** [fill in]\n';
+                    markdown += '**Why Wrong:** ' + (w.explanation || '[fill in]') + '\n';
+                    markdown += '**Memory Hook:** ' + (w.memoryHook || '[fill in]') + '\n';
+                    markdown += '**Mastered:** No\n';
+                    markdown += '**Times Wrong:** 1\n';
+                    markdown += '**Last Tested:** ' + today + '\n\n';
+                });
+
+                // Auto-download as .md file
+                const blob = new Blob([markdown], { type: 'text/markdown' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'wrong-answers-' + today + '.md';
+                a.click();
+                URL.revokeObjectURL(url);
             }
 
             showExportModal(content) {
