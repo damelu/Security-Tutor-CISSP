@@ -741,8 +741,9 @@
                 <button class="nav-tab" data-tab="history">History</button>
             </div>
             <div class="nav-actions">
-                <button class="btn-icon" id="exportBtn" title="Save your progress (quiz history, wrong answers, mastery) as a JSON file">Save Progress</button>
-                <button class="btn-icon" id="importBtn" title="Load a previously saved progress file to restore your data">Load Progress</button>
+                <span id="autoSaveStatus" style="font-size: 0.75rem; color: var(--text-muted); margin-right: 0.5rem;" title="Progress auto-saves to your browser after every quiz"></span>
+                <button class="btn-icon" id="exportBtn" title="Download a backup of your progress as a JSON file (for transferring to another device)">Backup to File</button>
+                <button class="btn-icon" id="importBtn" title="Restore progress from a previously downloaded backup file">Restore from File</button>
             </div>
         </div>
     </nav>
@@ -974,6 +975,12 @@
                 this.renderDifficultyCheckboxes();
                 this.updateRewrongStatus();
                 this.updateHistory();
+
+                // Show auto-save status on load
+                const el = document.getElementById('autoSaveStatus');
+                if (el && this.state.totalAnswered > 0) {
+                    el.textContent = 'Progress auto-saved in browser';
+                }
             }
 
             loadState() {
@@ -1001,6 +1008,14 @@
 
             saveState() {
                 localStorage.setItem('cissp_state', JSON.stringify(this.state));
+                const el = document.getElementById('autoSaveStatus');
+                if (el) {
+                    const now = new Date();
+                    const time = now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                    el.textContent = 'Auto-saved ' + time;
+                    el.style.color = 'var(--success)';
+                    setTimeout(() => { el.style.color = 'var(--text-muted)'; }, 2000);
+                }
             }
 
             loadQuestions() {
