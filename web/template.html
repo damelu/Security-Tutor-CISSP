@@ -1,0 +1,2255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CISSP Study Kit - Adaptive Quiz & Exam Prep</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0e27;
+            --surface: #131829;
+            --surface-alt: #1f2642;
+            --accent: #6366f1;
+            --accent-hover: #818cf8;
+            --accent-light: #c7d2fe;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #293548;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --error: #ef4444;
+            --error-light: #fee2e2;
+            --info: #3b82f6;
+            --bg-tertiary: #0f1729;
+            --danger: #dc2626;
+            --glow: 0 0 20px rgba(99, 102, 241, 0.15);
+            --glow-hover: 0 0 30px rgba(99, 102, 241, 0.25);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Gradient header bar */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--info), var(--accent));
+            background-size: 200% 100%;
+            animation: gradientShift 6s ease-in-out infinite;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 100% 0%; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(19, 24, 41, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            padding: 1.25rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-content {
+            display: flex;
+            gap: 2rem;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1.5rem;
+        }
+
+        .nav-brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-brand::before {
+            content: '🛡️';
+            font-size: 1.5rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .nav-tab {
+            padding: 0.6rem 1.25rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: var(--accent-light);
+            background: rgba(99, 102, 241, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .nav-tab.active {
+            color: var(--text-primary);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(59, 130, 246, 0.1));
+            box-shadow: inset 0 0 20px rgba(99, 102, 241, 0.1), var(--glow);
+            border: 1px solid var(--accent);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .btn-icon {
+            padding: 0.6rem 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--border);
+            color: var(--accent-light);
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+        }
+
+        .btn-icon:hover {
+            background: var(--accent);
+            color: var(--text-primary);
+            border-color: var(--accent-hover);
+            box-shadow: var(--glow-hover);
+            transform: translateY(-2px);
+        }
+
+        .main {
+            padding: 3rem 0;
+            min-height: calc(100vh - 100px);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: linear-gradient(135deg, var(--surface) 0%, var(--surface-alt) 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 20px 50px rgba(99, 102, 241, 0.15), var(--glow);
+            transform: translateY(-4px);
+        }
+
+        .card-header {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            position: relative;
+            z-index: 1;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: left 0.3s ease-out;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--info));
+            color: white;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4);
+            background: linear-gradient(135deg, var(--accent-hover), #60a5fa);
+        }
+
+        .btn-secondary {
+            background: rgba(99, 102, 241, 0.12);
+            color: var(--accent-light);
+            border: 1px solid var(--accent);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(99, 102, 241, 0.2);
+            box-shadow: var(--glow);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+            background: linear-gradient(135deg, #34d399, #10b981);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--error), var(--danger));
+            color: white;
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(239, 68, 68, 0.4);
+            background: linear-gradient(135deg, #f87171, #ef4444);
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.9rem;
+            font-size: 0.85rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.75rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.05);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        /* Stat Cards */
+        .stat-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(59, 130, 246, 0.05));
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-card:nth-child(2) {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+        }
+
+        .stat-card:nth-child(2):hover {
+            border-color: var(--success);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
+        }
+
+        .stat-card:nth-child(3) {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(126, 34, 206, 0.05));
+        }
+
+        .stat-card:nth-child(3):hover {
+            border-color: #a855f7;
+            box-shadow: 0 20px 40px rgba(168, 85, 247, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            background: linear-gradient(135deg, var(--accent-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+        }
+
+        .stat-card:nth-child(2) .stat-value {
+            background: linear-gradient(135deg, var(--success-light), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card:nth-child(3) .stat-value {
+            background: linear-gradient(135deg, #e9d5ff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Progress Bars */
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: var(--bg-tertiary);
+            border-radius: 999px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--info));
+            border-radius: 999px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Domain Performance */
+        .domain-row {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.25rem;
+            background: rgba(99, 102, 241, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .domain-row:hover {
+            background: rgba(99, 102, 241, 0.08);
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .domain-name {
+            flex: 0 0 280px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .domain-bar {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .domain-row .progress-bar {
+            height: 12px;
+        }
+
+        .domain-stats {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 0 0 auto;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Color-coded progress bars based on performance */
+        .domain-row[data-accuracy="high"] .progress-fill {
+            background: linear-gradient(90deg, var(--success), #10b981);
+        }
+
+        .domain-row[data-accuracy="medium"] .progress-fill {
+            background: linear-gradient(90deg, var(--warning), #fbbf24);
+        }
+
+        .domain-row[data-accuracy="low"] .progress-fill {
+            background: linear-gradient(90deg, var(--error), #f87171);
+        }
+
+        .cat-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid;
+        }
+
+        .cat-badge.associate {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+            border-color: var(--info);
+        }
+
+        .cat-badge.professional {
+            background: rgba(168, 85, 247, 0.1);
+            color: #a855f7;
+            border-color: #a855f7;
+        }
+
+        .cat-badge.expert {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border-color: var(--error);
+        }
+
+        /* Question Card */
+        .question-card {
+            background: linear-gradient(135deg, var(--surface) 0%, var(--surface-alt) 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .question-number {
+            background: linear-gradient(135deg, var(--accent), var(--info));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .question-meta {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge.domain {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--accent-light);
+            border: 1px solid var(--accent);
+        }
+
+        .badge.difficulty {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning-light);
+            border: 1px solid var(--warning);
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .option {
+            padding: 1.25rem;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .option:hover {
+            background: rgba(99, 102, 241, 0.08);
+            border-color: var(--accent);
+            transform: translateX(4px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.15);
+        }
+
+        .option input[type="radio"] {
+            margin-top: 0.3rem;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .option-text {
+            flex: 1;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .option.selected {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.12);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
+        }
+
+        .option.correct::after {
+            content: '✓';
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .option.incorrect {
+            border-color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.15);
+        }
+
+        .option.incorrect::after {
+            content: '✕';
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: var(--error);
+            font-weight: 700;
+        }
+
+        /* Explanation */
+        .explanation {
+            background: rgba(99, 102, 241, 0.08);
+            border-left: 4px solid var(--accent);
+            border-radius: 6px;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: var(--accent-light);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .explanation-text {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 0.9rem;
+        }
+
+        /* Quiz Progress */
+        .quiz-progress {
+            margin-bottom: 2rem;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-stats {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            padding: 1rem;
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .progress-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-stat-value {
+            font-weight: 700;
+            color: var(--accent-light);
+            font-size: 1.1rem;
+        }
+
+        .progress-stat-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                backdrop-filter: blur(0px);
+            }
+            to {
+                opacity: 1;
+                backdrop-filter: blur(4px);
+            }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, var(--surface) 0%, var(--surface-alt) 100%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s ease-out;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+            transform: scale(1.2);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Results Container */
+        .results-container {
+            text-align: center;
+        }
+
+        .results-score {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--info));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+
+        .results-message {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .results-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .result-item {
+            padding: 1.5rem;
+            background: rgba(99, 102, 241, 0.08);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .result-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.3px;
+        }
+
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-light);
+        }
+
+        /* History */
+        .history-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem;
+            background: rgba(99, 102, 241, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease-out;
+        }
+
+        .history-row:hover {
+            background: rgba(99, 102, 241, 0.08);
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .history-date {
+            font-weight: 600;
+            color: var(--text-primary);
+            flex: 0 0 auto;
+        }
+
+        .history-info {
+            flex: 1;
+            margin: 0 1.5rem;
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .history-score {
+            color: var(--text-secondary);
+        }
+
+        .history-score .score-value {
+            color: var(--accent-light);
+            font-weight: 700;
+        }
+
+        /* Utility Classes */
+        .flex {
+            display: flex;
+            align-items: center;
+        }
+
+        .gap-2 {
+            gap: 1rem;
+        }
+
+        .mt-2 {
+            margin-top: 1rem;
+        }
+
+        .mt-3 {
+            margin-top: 1.5rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 1rem;
+        }
+
+        /* Checkbox and Toggle Styles */
+        input[type="checkbox"] {
+            accent-color: var(--accent);
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            transition: all 0.3s ease-out;
+        }
+
+        input[type="checkbox"]:hover {
+            transform: scale(1.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.65rem 0.9rem;
+            background: rgba(99, 102, 241, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+        }
+
+        .checkbox-item:hover {
+            background: rgba(99, 102, 241, 0.08);
+            border-color: var(--accent);
+            transform: translateX(2px);
+        }
+
+        .checkbox-item input[type="checkbox"]:checked {
+            filter: brightness(1.2);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        footer p {
+            margin: 0;
+            padding: 0.5rem 0;
+        }
+
+        /* Code Block for Bank Import */
+        .copy-btn {
+            padding: 0.5rem 0.75rem;
+            margin-left: 0.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.3s ease-out;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .copy-btn.copied {
+            background: var(--success);
+        }
+
+        .code-block {
+            position: relative;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .code-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .nav-content {
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+
+            .nav-brand {
+                font-size: 1.1rem;
+            }
+
+            .nav-tabs {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .nav-actions {
+                width: 100%;
+                margin-left: 0;
+            }
+
+            .btn-icon {
+                padding: 0.5rem 0.85rem;
+                font-size: 0.8rem;
+            }
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .domain-name {
+                flex: 0 0 100%;
+            }
+
+            .domain-bar {
+                flex: 0 0 100%;
+            }
+
+            .domain-stats {
+                flex: 0 0 100%;
+            }
+
+            .domain-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+
+            .history-info {
+                flex-direction: column;
+                gap: 0.5rem;
+                margin: 1rem 0;
+            }
+
+            .question-card {
+                padding: 1.5rem;
+            }
+
+            .modal-footer {
+                flex-direction: column;
+            }
+
+            .modal-footer .btn {
+                width: 100%;
+            }
+
+            .results-score {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-brand::before {
+                content: '';
+            }
+
+            .nav-brand {
+                font-size: 0.95rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .btn {
+                padding: 0.65rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-content">
+            <a href="#" class="nav-brand">CISSP Study Kit</a>
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="dashboard">Dashboard</button>
+                <button class="nav-tab" data-tab="tonights">Tonight's Study</button>
+                <button class="nav-tab" data-tab="quiz">Quiz</button>
+                <button class="nav-tab" data-tab="rewrong">Re-Quiz Wrong</button>
+                <button class="nav-tab" data-tab="bank">Bank Sync</button>
+                <button class="nav-tab" data-tab="history">History</button>
+            </div>
+            <div class="nav-actions">
+                <span id="autoSaveStatus" style="font-size: 0.75rem; color: var(--text-muted); margin-right: 0.5rem;" title="Progress auto-saves to your browser after every quiz"></span>
+                <button class="btn-icon" id="exportBtn" title="Download a backup of your progress as a JSON file (for transferring to another device)">Backup to File</button>
+                <button class="btn-icon" id="importBtn" title="Restore progress from a previously downloaded backup file">Restore from File</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Dashboard Tab -->
+            <div class="tab-content active" id="dashboard-tab">
+                <div class="card">
+                    <div class="card-header">Dashboard</div>
+                    <div class="grid grid-3">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalAnswered">0</div>
+                            <div class="stat-label">Questions Answered</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalCorrect">0</div>
+                            <div class="stat-label">Correct</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="overallAccuracy">0%</div>
+                            <div class="stat-label">Overall Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Domain Performance</div>
+                    <div id="domainPerformance"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Last Session Summary</div>
+                    <div id="lastSessionSummary"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Quick Actions</div>
+                    <div class="flex gap-2" style="flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="app.startContinueQuiz()">
+                            Continue Learning
+                        </button>
+                        <button class="btn btn-secondary" onclick="app.showTab('quiz')">
+                            Start New Quiz
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tonight's Study Tab -->
+            <div class="tab-content" id="tonights-tab">
+                <div class="card">
+                    <div class="card-header">Tonight's Bootcamp Study</div>
+                    <div class="form-group">
+                        <label class="form-label">Select Study Day:</label>
+                        <select id="bootcampDay" class="form-select">
+                            <option value="">-- Choose a day --</option>
+                            <option value="monday">Monday</option>
+                            <option value="tuesday">Tuesday</option>
+                            <option value="wednesday">Wednesday</option>
+                            <option value="thursday">Thursday</option>
+                            <option value="friday">Friday</option>
+                        </select>
+                    </div>
+                    <div id="bootcampInfo"></div>
+                    <div id="bootcampSourceFilter" style="display:none; margin: 1rem 0;">
+                        <div style="background: rgba(99, 102, 241, 0.06); padding: 1rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 1rem;">
+                            <p style="margin-bottom: 0.75rem; font-weight: 600;">Question Sources:</p>
+                            <span style="display: inline-block; padding: 0.5rem 1rem; background: var(--bg-tertiary); border-radius: 6px; margin-right: 1rem; margin-bottom: 0.5rem;">Practice Exam (PDF/Excel) — <span id="hwPdfCount">0</span> questions</span>
+                            <span style="display: inline-block; padding: 0.5rem 1rem; background: var(--bg-tertiary); border-radius: 6px;">PowerPoint Slides — <span id="hwPptCount">0</span> questions</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="app.startBootcampQuiz()" id="bootcampStartBtn" disabled>
+                        Start Homework (<span id="hwTotalCount">0</span> questions)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quiz Configuration Tab -->
+            <div class="tab-content" id="quiz-tab">
+                <div class="card">
+                    <div class="card-header">Configure Your Quiz</div>
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Select Domains:</label>
+                            <div id="domainCheckboxes" class="checkbox-group"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Number of Questions:</label>
+                            <input type="number" id="questionCount" class="form-input" value="20" min="1" max="240">
+                        </div>
+                    </div>
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Difficulty Levels:</label>
+                            <div id="difficultyCheckboxes" class="checkbox-group"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Quiz Mode:</label>
+                            <select id="quizMode" class="form-select">
+                                <option value="adaptive">Adaptive (Recommended)</option>
+                                <option value="random">Random</option>
+                                <option value="weaknesses">Focus on Weaknesses</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="app.startCustomQuiz()" style="width: 100%;">Start Quiz</button>
+                </div>
+            </div>
+
+            <!-- Re-Quiz Wrong Tab -->
+            <div class="tab-content" id="rewrong-tab">
+                <div class="card">
+                    <div class="card-header">Re-Quiz Wrong Answers</div>
+                    <div id="rewrongStatus"></div>
+                    <div id="rewrongDomainFilter" style="display:none; margin: 1rem 0;">
+                        <div class="form-group">
+                            <label class="form-label">Filter by Domain (optional):</label>
+                            <div id="rewrongDomainCheckboxes" class="checkbox-group"></div>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
+                            <button class="btn btn-secondary btn-sm" onclick="app.rewrongSelectAll(true)">Select All</button>
+                            <button class="btn btn-secondary btn-sm" onclick="app.rewrongSelectAll(false)">Clear All</button>
+                            <button class="btn btn-secondary btn-sm" onclick="app.rewrongAutoSelect()">Auto-Select Weakest</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="app.startReQuiz()" id="rewrongStartBtn" disabled>
+                        Start Re-Quiz (<span id="rewrongCount">0</span> questions)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bank Sync Tab -->
+            <div class="tab-content" id="bank-tab">
+                <div class="card">
+                    <div class="card-header">Import from WRONG-ANSWER-BANK.md</div>
+                    <div class="form-group">
+                        <label class="form-label">Paste WRONG-ANSWER-BANK.md Content:</label>
+                        <textarea id="bankInput" class="form-textarea" placeholder="Paste your WRONG-ANSWER-BANK.md content here..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="app.importBank()">Import Questions</button>
+                    <div id="bankStatus" class="mt-2"></div>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div class="tab-content" id="history-tab">
+                <div class="card">
+                    <div class="card-header">Quiz History</div>
+                    <div id="historyContent"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div class="modal" id="quizModal">
+        <div class="modal-content" id="quizContent"></div>
+    </div>
+
+    <div class="modal" id="resultsModal">
+        <div class="modal-content">
+            <div id="resultsContent"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeModal()">Close</button>
+                <button class="btn btn-primary" onclick="app.exportSessionResults()">Export Results</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Embedded questions data (generated quiz bank)
+        const QUESTIONS_DATA = PLACEHOLDER_QUESTIONS_DATA;
+
+        // Real course homework questions from Excel tracker + PDF
+        const HOMEWORK_DATA = PLACEHOLDER_HOMEWORK_DATA;
+
+        // Domain definitions
+        const DOMAINS = {
+            "Security and Risk Management": "D1",
+            "Asset Security": "D2",
+            "Security Architecture and Engineering": "D3",
+            "Communication and Network Security": "D4",
+            "Identity and Access Management": "D5",
+            "Security Assessment and Testing": "D6",
+            "Security Operations": "D7",
+            "Software Development Security": "D8"
+        };
+
+        const DOMAIN_WEIGHTS = {
+            "Security and Risk Management": 0.16,
+            "Asset Security": 0.10,
+            "Security Architecture and Engineering": 0.13,
+            "Communication and Network Security": 0.13,
+            "Identity and Access Management": 0.13,
+            "Security Assessment and Testing": 0.12,
+            "Security Operations": 0.13,
+            "Software Development Security": 0.10
+        };
+
+        const BOOTCAMP_SCHEDULE = {
+            monday: ["Security and Risk Management", "Asset Security"],
+            tuesday: ["Security Architecture and Engineering"],
+            wednesday: ["Security Architecture and Engineering", "Communication and Network Security"],
+            thursday: ["Communication and Network Security", "Identity and Access Management", "Security Assessment and Testing"],
+            friday: ["Security Operations", "Software Development Security"]
+        };
+
+        class CISSPStudyApp {
+            constructor() {
+                this.questions = [];
+                this.currentQuiz = null;
+                this.currentQuestionIndex = 0;
+                this.quizAnswers = {};
+                this.state = this.loadState();
+                this.init();
+            }
+
+            init() {
+                this.loadQuestions();
+                this.setupEventListeners();
+                this.renderDashboard();
+                this.renderBootcampOptions();
+                this.renderDomainCheckboxes();
+                this.renderDifficultyCheckboxes();
+                this.updateRewrongStatus();
+                this.updateHistory();
+
+                // Show auto-save status on load
+                const el = document.getElementById('autoSaveStatus');
+                if (el && this.state.totalAnswered > 0) {
+                    el.textContent = 'Progress auto-saved in browser';
+                }
+            }
+
+            loadState() {
+                const saved = localStorage.getItem('cissp_state');
+                if (saved) {
+                    try {
+                        return JSON.parse(saved);
+                    } catch (e) {
+                        console.error('Failed to load state:', e);
+                    }
+                }
+                return {
+                    domainStats: {},
+                    wrongAnswers: {},
+                    quizHistory: [],
+                    sessions: [],
+                    totalAnswered: 0,
+                    totalCorrect: 0,
+                    streak: 0,
+                    catLevels: {},
+                    lastSessionDate: null,
+                    lastSessionDomains: []
+                };
+            }
+
+            saveState() {
+                localStorage.setItem('cissp_state', JSON.stringify(this.state));
+                const el = document.getElementById('autoSaveStatus');
+                if (el) {
+                    const now = new Date();
+                    const time = now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                    el.textContent = 'Auto-saved ' + time;
+                    el.style.color = 'var(--success)';
+                    setTimeout(() => { el.style.color = 'var(--text-muted)'; }, 2000);
+                }
+            }
+
+            loadQuestions() {
+                // Flatten all questions from the embedded data
+                this.questions = [];
+                for (const domain in QUESTIONS_DATA.domains) {
+                    const domainData = QUESTIONS_DATA.domains[domain];
+                    ['associate', 'professional', 'expert'].forEach(difficulty => {
+                        if (domainData[difficulty]) {
+                            domainData[difficulty].forEach(q => {
+                                this.questions.push({
+                                    ...q,
+                                    domain,
+                                    difficulty
+                                });
+                            });
+                        }
+                    });
+                }
+            }
+
+            setupEventListeners() {
+                // Tab switching
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        const tabName = e.target.dataset.tab;
+                        this.showTab(tabName);
+                    });
+                });
+
+                // Bootcamp day selection
+                document.getElementById('bootcampDay').addEventListener('change', (e) => {
+                    document.getElementById('bootcampStartBtn').disabled = !e.target.value;
+                    this.renderBootcampInfo(e.target.value);
+                });
+
+                // Export/Import
+                document.getElementById('exportBtn').addEventListener('click', () => this.exportState());
+                document.getElementById('importBtn').addEventListener('click', () => this.importState());
+            }
+
+            showTab(tabName) {
+                // Hide all tabs
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+
+                // Show selected tab
+                document.getElementById(tabName + '-tab').classList.add('active');
+                document.querySelector('[data-tab="' + tabName + '"]').classList.add('active');
+
+                // Refresh tab content
+                if (tabName === 'dashboard') this.renderDashboard();
+                if (tabName === 'history') this.updateHistory();
+                if (tabName === 'rewrong') this.updateRewrongStatus();
+            }
+
+            renderDashboard() {
+                // Update stats
+                document.getElementById('totalAnswered').textContent = this.state.totalAnswered;
+                document.getElementById('totalCorrect').textContent = this.state.totalCorrect;
+                const accuracy = this.state.totalAnswered > 0
+                    ? Math.round((this.state.totalCorrect / this.state.totalAnswered) * 100)
+                    : 0;
+                document.getElementById('overallAccuracy').textContent = accuracy + '%';
+
+                // Render domain performance
+                const domainPerf = document.getElementById('domainPerformance');
+                domainPerf.innerHTML = '';
+
+                for (const domain in DOMAINS) {
+                    const stats = this.state.domainStats[domain] || { correct: 0, total: 0, byDifficulty: {} };
+                    const catLevel = this.state.catLevels[domain] || 'associate';
+                    const domainAccuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
+
+                    // Determine data-accuracy for color coding
+                    let accuracyLevel = 'low';
+                    if (domainAccuracy >= 70) accuracyLevel = 'high';
+                    else if (domainAccuracy >= 40) accuracyLevel = 'medium';
+
+                    const row = document.createElement('div');
+                    row.className = 'domain-row';
+                    row.setAttribute('data-accuracy', accuracyLevel);
+                    row.innerHTML = '<div class="domain-name">' + domain + '</div>' +
+                        '<div class="domain-bar">' +
+                        '<div class="progress-bar">' +
+                        '<div class="progress-fill" style="width: ' + domainAccuracy + '%"></div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="domain-stats">' +
+                        stats.correct + '/' + stats.total + ' (' + domainAccuracy + '%)' +
+                        '<span class="cat-badge ' + catLevel + '">' + catLevel + '</span>' +
+                        '</div>';
+                    domainPerf.appendChild(row);
+                }
+
+                // Last session summary
+                const lastSessionDiv = document.getElementById('lastSessionSummary');
+                if (this.state.quizHistory.length > 0) {
+                    const lastSession = this.state.quizHistory[this.state.quizHistory.length - 1];
+                    lastSessionDiv.innerHTML = '<p><strong>Date:</strong> ' + new Date(lastSession.date).toLocaleDateString() + '</p>' +
+                        '<p><strong>Score:</strong> ' + lastSession.score + '%</p>' +
+                        '<p><strong>Questions:</strong> ' + lastSession.correct + '/' + lastSession.total + '</p>' +
+                        '<p><strong>Domains:</strong> ' + lastSession.domains.join(', ') + '</p>' +
+                        '<p><strong>Time:</strong> ' + Math.round(lastSession.elapsed / 60) + ' minutes</p>';
+                } else {
+                    lastSessionDiv.innerHTML = '<p style="color: var(--text-muted);">No quizzes taken yet. Start a quiz to see your last session summary!</p>';
+                }
+            }
+
+            renderDomainCheckboxes() {
+                const container = document.getElementById('domainCheckboxes');
+                container.innerHTML = '';
+                for (const domain in DOMAINS) {
+                    const label = document.createElement('label');
+                    label.className = 'checkbox-item';
+                    const input = document.createElement('input');
+                    input.type = 'checkbox';
+                    input.value = domain;
+                    input.checked = true;
+                    label.appendChild(input);
+                    label.appendChild(document.createTextNode(domain));
+                    container.appendChild(label);
+                }
+            }
+
+            renderDifficultyCheckboxes() {
+                const container = document.getElementById('difficultyCheckboxes');
+                container.innerHTML = '';
+                const difficulties = ['associate', 'professional', 'expert'];
+                difficulties.forEach(diff => {
+                    const label = document.createElement('label');
+                    label.className = 'checkbox-item';
+                    const input = document.createElement('input');
+                    input.type = 'checkbox';
+                    input.value = diff;
+                    input.checked = true;
+                    label.appendChild(input);
+                    label.appendChild(document.createTextNode(diff.charAt(0).toUpperCase() + diff.slice(1)));
+                    container.appendChild(label);
+                });
+            }
+
+            renderBootcampOptions() {
+                // Populate day selector with days that have questions
+                const daySelector = document.getElementById('bootcampDay');
+                for (const day in BOOTCAMP_SCHEDULE) {
+                    const option = document.createElement('option');
+                    option.value = day;
+                    option.textContent = day.charAt(0).toUpperCase() + day.slice(1);
+                    daySelector.appendChild(option);
+                }
+            }
+
+            renderBootcampInfo(day) {
+                const container = document.getElementById('bootcampInfo');
+                container.innerHTML = '';
+
+                if (!day || !BOOTCAMP_SCHEDULE[day]) return;
+
+                const domains = BOOTCAMP_SCHEDULE[day];
+                const infoDiv = document.createElement('div');
+                infoDiv.style.marginTop = '1.5rem';
+                infoDiv.innerHTML = '<p style="color: var(--text-secondary); margin-bottom: 0.75rem;"><strong>Topics for ' + day.charAt(0).toUpperCase() + day.slice(1) + ':</strong></p>';
+
+                const domainList = document.createElement('ul');
+                domainList.style.marginLeft = '1.5rem';
+                domainList.style.marginBottom = '1.5rem';
+                domains.forEach(domain => {
+                    const li = document.createElement('li');
+                    li.textContent = domain;
+                    li.style.marginBottom = '0.5rem';
+                    li.style.color = 'var(--text-primary)';
+                    domainList.appendChild(li);
+                });
+                infoDiv.appendChild(domainList);
+                container.appendChild(infoDiv);
+
+                // Count homework questions
+                let pdfCount = 0, pptCount = 0;
+                domains.forEach(domain => {
+                    if (HOMEWORK_DATA.questions) {
+                        HOMEWORK_DATA.questions.forEach(q => {
+                            if (q.domain === domain) {
+                                if (q.source && q.source.includes('PDF')) pdfCount++;
+                                else if (q.source && q.source.includes('PPT')) pptCount++;
+                            }
+                        });
+                    }
+                });
+
+                document.getElementById('hwPdfCount').textContent = pdfCount;
+                document.getElementById('hwPptCount').textContent = pptCount;
+                document.getElementById('hwTotalCount').textContent = pdfCount + pptCount;
+
+                if ((pdfCount + pptCount) > 0) {
+                    document.getElementById('bootcampSourceFilter').style.display = 'block';
+                    document.getElementById('bootcampStartBtn').disabled = false;
+                } else {
+                    document.getElementById('bootcampSourceFilter').style.display = 'none';
+                    document.getElementById('bootcampStartBtn').disabled = true;
+                }
+            }
+
+            startBootcampQuiz() {
+                const day = document.getElementById('bootcampDay').value;
+                if (!day) return;
+
+                const domains = BOOTCAMP_SCHEDULE[day];
+                const questions = HOMEWORK_DATA.questions.filter(q => domains.includes(q.domain));
+
+                if (questions.length === 0) {
+                    alert('No questions available for ' + day);
+                    return;
+                }
+
+                this.startQuiz(questions, 'Bootcamp - ' + day);
+            }
+
+            startContinueQuiz() {
+                if (this.state.lastSessionDomains.length === 0) {
+                    alert('No previous session. Please start a new quiz.');
+                    this.showTab('quiz');
+                    return;
+                }
+
+                const selectedDomains = this.state.lastSessionDomains;
+                const questions = this.questions.filter(q => selectedDomains.includes(q.domain));
+
+                if (questions.length === 0) {
+                    alert('No questions available. Please create a custom quiz.');
+                    this.showTab('quiz');
+                    return;
+                }
+
+                this.startQuiz(questions, 'Continue - ' + this.state.lastSessionDomains.join(', '));
+            }
+
+            startCustomQuiz() {
+                const selectedDomains = [];
+                document.querySelectorAll('#domainCheckboxes input[type="checkbox"]:checked').forEach(cb => {
+                    selectedDomains.push(cb.value);
+                });
+
+                const selectedDifficulties = [];
+                document.querySelectorAll('#difficultyCheckboxes input[type="checkbox"]:checked').forEach(cb => {
+                    selectedDifficulties.push(cb.value);
+                });
+
+                if (selectedDomains.length === 0 || selectedDifficulties.length === 0) {
+                    alert('Please select at least one domain and difficulty level');
+                    return;
+                }
+
+                const questionCount = parseInt(document.getElementById('questionCount').value) || 20;
+                const quizMode = document.getElementById('quizMode').value;
+
+                const filtered = this.questions.filter(q =>
+                    selectedDomains.includes(q.domain) && selectedDifficulties.includes(q.difficulty)
+                );
+
+                if (filtered.length === 0) {
+                    alert('No questions match your criteria');
+                    return;
+                }
+
+                // Sort by mode
+                let selected = [...filtered];
+                if (quizMode === 'adaptive') {
+                    // Adaptive: prioritize weak domains
+                    selected.sort((a, b) => {
+                        const aStats = this.state.domainStats[a.domain] || { correct: 0, total: 0 };
+                        const bStats = this.state.domainStats[b.domain] || { correct: 0, total: 0 };
+                        const aAccuracy = aStats.total > 0 ? aStats.correct / aStats.total : 0.5;
+                        const bAccuracy = bStats.total > 0 ? bStats.correct / bStats.total : 0.5;
+                        return aAccuracy - bAccuracy;
+                    });
+                } else if (quizMode === 'random') {
+                    // Shuffle
+                    for (let i = selected.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [selected[i], selected[j]] = [selected[j], selected[i]];
+                    }
+                } else if (quizMode === 'weaknesses') {
+                    // Focus on weaknesses (lowest accuracy first)
+                    selected.sort((a, b) => {
+                        const aStats = this.state.domainStats[a.domain] || { correct: 0, total: 0 };
+                        const bStats = this.state.domainStats[b.domain] || { correct: 0, total: 0 };
+                        const aAccuracy = aStats.total > 0 ? aStats.correct / aStats.total : 0.5;
+                        const bAccuracy = bStats.total > 0 ? bStats.correct / bStats.total : 0.5;
+                        return aAccuracy - bAccuracy;
+                    });
+                }
+
+                selected = selected.slice(0, Math.min(questionCount, selected.length));
+                this.startQuiz(selected, selectedDomains.join(', '));
+            }
+
+            startQuiz(questions, sessionName) {
+                if (questions.length === 0) {
+                    alert('No questions available');
+                    return;
+                }
+
+                this.currentQuiz = {
+                    questions: questions,
+                    sessionName: sessionName,
+                    startTime: Date.now(),
+                    endTime: null
+                };
+                this.currentQuestionIndex = 0;
+                this.quizAnswers = {};
+
+                this.renderQuestion();
+                document.getElementById('quizModal').classList.add('active');
+            }
+
+            renderQuestion() {
+                if (!this.currentQuiz || this.currentQuestionIndex >= this.currentQuiz.questions.length) {
+                    this.endQuiz();
+                    return;
+                }
+
+                const question = this.currentQuiz.questions[this.currentQuestionIndex];
+                const content = document.getElementById('quizContent');
+                const qNum = this.currentQuestionIndex + 1;
+                const totalQ = this.currentQuiz.questions.length;
+
+                let html = '<div class="quiz-progress">' +
+                    '<div class="progress-text">' +
+                    '<span>Question ' + qNum + ' of ' + totalQ + '</span>' +
+                    '<span style="color: var(--accent);">' + Math.round((qNum / totalQ) * 100) + '%</span>' +
+                    '</div>' +
+                    '<div class="progress-bar"><div class="progress-fill" style="width: ' + Math.round((qNum / totalQ) * 100) + '%"></div></div>' +
+                    '<div class="progress-stats">' +
+                    '<div class="progress-stat"><span class="progress-stat-value">' + (Object.keys(this.quizAnswers).length) + '</span><span class="progress-stat-label">Answered</span></div>' +
+                    '<div class="progress-stat"><span class="progress-stat-value">' + (this.quizAnswers[this.currentQuestionIndex] ? '✓' : '○') + '</span><span class="progress-stat-label">Current</span></div>' +
+                    '</div>' +
+                    '</div>';
+
+                html += '<div class="question-card">' +
+                    '<div class="question-header">' +
+                    '<span class="question-number">Q' + qNum + '</span>' +
+                    '<div class="question-meta">' +
+                    '<span class="badge domain">' + question.domain + '</span>' +
+                    '<span class="badge difficulty">' + question.difficulty + '</span>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="question-text">' + question.question + '</div>';
+
+                html += '<div class="options">';
+                question.options.forEach((option, idx) => {
+                    const isSelected = this.quizAnswers[this.currentQuestionIndex] === idx;
+                    html += '<label class="option ' + (isSelected ? 'selected' : '') + '">' +
+                        '<input type="radio" name="answer" value="' + idx + '" ' + (isSelected ? 'checked' : '') + '>' +
+                        '<span class="option-text">' + option + '</span>' +
+                        '</label>';
+                });
+                html += '</div>';
+
+                html += '<div style="display: flex; gap: 1rem; margin-top: 2rem;">' +
+                    '<button class="btn btn-secondary" onclick="app.previousQuestion()" ' + (qNum === 1 ? 'disabled' : '') + '>← Previous</button>' +
+                    '<button class="btn btn-primary" style="flex: 1;" onclick="app.saveAnswer()">Save Answer</button>' +
+                    '<button class="btn btn-secondary" onclick="app.nextQuestion()" ' + (qNum === totalQ ? 'disabled' : '') + '>Next →</button>' +
+                    '</div>' +
+                    '<button class="btn btn-danger" style="width: 100%; margin-top: 0.75rem;" onclick="if(confirm(\'End quiz now?\')) { app.endQuiz(); }">End Quiz</button>' +
+                    '</div>';
+
+                content.innerHTML = html;
+
+                // Add event listeners for radio buttons
+                document.querySelectorAll('.option input[type="radio"]').forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                        e.target.closest('.option').classList.add('selected');
+                    });
+                });
+            }
+
+            saveAnswer() {
+                const selected = document.querySelector('.option input[type="radio"]:checked');
+                if (selected) {
+                    this.quizAnswers[this.currentQuestionIndex] = parseInt(selected.value);
+                    alert('Answer saved!');
+                }
+            }
+
+            nextQuestion() {
+                this.saveAnswer();
+                if (this.currentQuestionIndex < this.currentQuiz.questions.length - 1) {
+                    this.currentQuestionIndex++;
+                    this.renderQuestion();
+                }
+            }
+
+            previousQuestion() {
+                if (this.currentQuestionIndex > 0) {
+                    this.currentQuestionIndex--;
+                    this.renderQuestion();
+                }
+            }
+
+            endQuiz() {
+                if (!this.currentQuiz) return;
+
+                // Calculate results
+                let correct = 0;
+                const questions = this.currentQuiz.questions;
+                const domains = new Set();
+
+                questions.forEach((q, idx) => {
+                    domains.add(q.domain);
+                    if (this.quizAnswers[idx] === q.correctOptionIndex) {
+                        correct++;
+                    } else if (idx in this.quizAnswers) {
+                        // Store wrong answer
+                        if (!this.state.wrongAnswers[q.id]) {
+                            this.state.wrongAnswers[q.id] = [];
+                        }
+                        this.state.wrongAnswers[q.id].push({
+                            timestamp: Date.now(),
+                            userAnswer: this.quizAnswers[idx],
+                            correctAnswer: q.correctOptionIndex
+                        });
+                    }
+
+                    // Update domain stats
+                    if (!this.state.domainStats[q.domain]) {
+                        this.state.domainStats[q.domain] = { correct: 0, total: 0, byDifficulty: {} };
+                    }
+                    this.state.domainStats[q.domain].total++;
+                    if (!this.state.domainStats[q.domain].byDifficulty[q.difficulty]) {
+                        this.state.domainStats[q.domain].byDifficulty[q.difficulty] = { correct: 0, total: 0 };
+                    }
+                    this.state.domainStats[q.domain].byDifficulty[q.difficulty].total++;
+
+                    if (this.quizAnswers[idx] === q.correctOptionIndex) {
+                        this.state.domainStats[q.domain].correct++;
+                        this.state.domainStats[q.domain].byDifficulty[q.difficulty].correct++;
+                    }
+                });
+
+                // Update global stats
+                this.state.totalAnswered += questions.length;
+                this.state.totalCorrect += correct;
+                this.state.lastSessionDate = new Date().toISOString();
+                this.state.lastSessionDomains = Array.from(domains);
+
+                // CAT level updates (simplified)
+                domains.forEach(domain => {
+                    const stats = this.state.domainStats[domain];
+                    const accuracy = stats.total > 0 ? stats.correct / stats.total : 0;
+                    if (accuracy >= 0.8) {
+                        this.state.catLevels[domain] = 'expert';
+                    } else if (accuracy >= 0.6) {
+                        this.state.catLevels[domain] = 'professional';
+                    } else {
+                        this.state.catLevels[domain] = 'associate';
+                    }
+                });
+
+                // Store session
+                const elapsed = (Date.now() - this.currentQuiz.startTime) / 1000;
+                this.state.quizHistory.push({
+                    date: new Date().toISOString(),
+                    domains: Array.from(domains),
+                    correct: correct,
+                    total: questions.length,
+                    score: Math.round((correct / questions.length) * 100),
+                    elapsed: elapsed
+                });
+
+                this.saveState();
+
+                // Show results
+                this.showResults(correct, questions.length, elapsed);
+                this.currentQuiz = null;
+            }
+
+            showResults(correct, total, elapsed) {
+                const score = Math.round((correct / total) * 100);
+                let message = 'Great job!';
+                if (score < 40) message = 'Keep practicing!';
+                else if (score < 60) message = 'Good effort. Review the material.';
+                else if (score < 80) message = 'Very good! You are on the right track.';
+                else if (score < 95) message = 'Excellent work!';
+                else message = 'Perfect score!';
+
+                const html = '<div class="results-container">' +
+                    '<div class="results-score">' + score + '%</div>' +
+                    '<div class="results-message">' + message + '</div>' +
+                    '<div class="results-details">' +
+                    '<div class="result-item"><div class="result-label">Correct</div><div class="result-value">' + correct + '/' + total + '</div></div>' +
+                    '<div class="result-item"><div class="result-label">Time</div><div class="result-value">' + Math.round(elapsed / 60) + ' min</div></div>' +
+                    '<div class="result-item"><div class="result-label">Speed</div><div class="result-value">' + Math.round(elapsed / total) + ' sec/q</div></div>' +
+                    '</div>' +
+                    '</div>';
+
+                document.getElementById('resultsContent').innerHTML = html;
+                document.getElementById('quizModal').classList.remove('active');
+                document.getElementById('resultsModal').classList.add('active');
+            }
+
+            updateRewrongStatus() {
+                const container = document.getElementById('rewrongStatus');
+                const wrongCount = Object.keys(this.state.wrongAnswers).length;
+
+                if (wrongCount === 0) {
+                    container.innerHTML = '<p style="color: var(--text-muted);">Great! No wrong answers to review yet. Keep practicing!</p>';
+                    document.getElementById('rewrongDomainFilter').style.display = 'none';
+                    document.getElementById('rewrongStartBtn').disabled = true;
+                    document.getElementById('rewrongCount').textContent = '0';
+                } else {
+                    container.innerHTML = '<p>You have <strong>' + wrongCount + '</strong> questions to review.</p>';
+                    this.renderRewrongDomainCheckboxes();
+                    document.getElementById('rewrongDomainFilter').style.display = 'block';
+                    document.getElementById('rewrongStartBtn').disabled = false;
+                }
+            }
+
+            renderRewrongDomainCheckboxes() {
+                const container = document.getElementById('rewrongDomainCheckboxes');
+                container.innerHTML = '';
+
+                // Get domains with wrong answers
+                const domainsWithWrong = new Set();
+                for (const qId in this.state.wrongAnswers) {
+                    const question = this.questions.find(q => q.id === qId);
+                    if (question) domainsWithWrong.add(question.domain);
+                }
+
+                for (const domain of domainsWithWrong) {
+                    const label = document.createElement('label');
+                    label.className = 'checkbox-item';
+                    const input = document.createElement('input');
+                    input.type = 'checkbox';
+                    input.value = domain;
+                    input.checked = true;
+                    label.appendChild(input);
+                    label.appendChild(document.createTextNode(domain));
+                    container.appendChild(label);
+                }
+            }
+
+            startReQuiz() {
+                const selectedDomains = [];
+                document.querySelectorAll('#rewrongDomainCheckboxes input[type="checkbox"]:checked').forEach(cb => {
+                    selectedDomains.push(cb.value);
+                });
+
+                const questions = [];
+                for (const qId in this.state.wrongAnswers) {
+                    const question = this.questions.find(q => q.id === qId);
+                    if (question && (selectedDomains.length === 0 || selectedDomains.includes(question.domain))) {
+                        questions.push(question);
+                    }
+                }
+
+                if (questions.length === 0) {
+                    alert('No questions to review');
+                    return;
+                }
+
+                this.startQuiz(questions, 'Review Wrong Answers');
+            }
+
+            rewrongSelectAll(checked) {
+                document.querySelectorAll('#rewrongDomainCheckboxes input[type="checkbox"]').forEach(cb => {
+                    cb.checked = checked;
+                });
+                document.getElementById('rewrongCount').textContent = this.countReQuestions();
+            }
+
+            rewrongAutoSelect() {
+                // Select domains with lowest accuracy
+                const domainAccuracy = {};
+                for (const domain in this.state.domainStats) {
+                    const stats = this.state.domainStats[domain];
+                    domainAccuracy[domain] = stats.total > 0 ? stats.correct / stats.total : 1;
+                }
+
+                document.querySelectorAll('#rewrongDomainCheckboxes input[type="checkbox"]').forEach(cb => {
+                    const acc = domainAccuracy[cb.value] || 1;
+                    cb.checked = acc < 0.7; // Auto-select weak domains
+                });
+                document.getElementById('rewrongCount').textContent = this.countReQuestions();
+            }
+
+            countReQuestions() {
+                const selectedDomains = [];
+                document.querySelectorAll('#rewrongDomainCheckboxes input[type="checkbox"]:checked').forEach(cb => {
+                    selectedDomains.push(cb.value);
+                });
+
+                let count = 0;
+                for (const qId in this.state.wrongAnswers) {
+                    const question = this.questions.find(q => q.id === qId);
+                    if (question && (selectedDomains.length === 0 || selectedDomains.includes(question.domain))) {
+                        count++;
+                    }
+                }
+                return count;
+            }
+
+            importBank() {
+                const content = document.getElementById('bankInput').value.trim();
+                if (!content) {
+                    alert('Please paste content');
+                    return;
+                }
+
+                // Parse markdown format
+                const lines = content.split('\n');
+                let questionsAdded = 0;
+
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    if (line.startsWith('##') && !line.startsWith('###')) {
+                        const qText = line.replace('##', '').trim();
+                        if (qText && lines[i + 1]) {
+                            const nextLine = lines[i + 1];
+                            // Extract question ID from the next line if it exists
+                            const qId = 'bank_' + questionsAdded;
+                            this.state.wrongAnswers[qId] = [{ timestamp: Date.now(), marked: true }];
+                            questionsAdded++;
+                        }
+                    }
+                }
+
+                this.saveState();
+                const status = document.getElementById('bankStatus');
+                status.innerHTML = '<p style="color: var(--success);">Successfully imported ' + questionsAdded + ' questions!</p>';
+                document.getElementById('bankInput').value = '';
+
+                setTimeout(() => {
+                    status.innerHTML = '';
+                    this.updateRewrongStatus();
+                }, 3000);
+            }
+
+            updateHistory() {
+                const container = document.getElementById('historyContent');
+                if (this.state.quizHistory.length === 0) {
+                    container.innerHTML = '<p style="color: var(--text-muted);">No quiz history yet. Start a quiz to see your progress!</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                this.state.quizHistory.reverse().forEach((session, idx) => {
+                    const row = document.createElement('div');
+                    row.className = 'history-row';
+                    row.innerHTML = '<div class="history-date">' + new Date(session.date).toLocaleDateString() + '</div>' +
+                        '<div class="history-info">' +
+                        '<div class="history-score">Score: <span class="score-value">' + session.score + '%</span></div>' +
+                        '<div style="color: var(--text-secondary);">' + session.correct + '/' + session.total + ' correct</div>' +
+                        '<div style="color: var(--text-secondary);">' + Math.round(session.elapsed / 60) + ' min</div>' +
+                        '</div>';
+                    container.appendChild(row);
+                });
+            }
+
+            exportState() {
+                const dataStr = JSON.stringify(this.state, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'cissp-progress-' + new Date().toISOString().split('T')[0] + '.json';
+                link.click();
+                URL.revokeObjectURL(url);
+            }
+
+            importState() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const imported = JSON.parse(event.target.result);
+                            this.state = { ...this.state, ...imported };
+                            this.saveState();
+                            alert('Progress imported successfully!');
+                            location.reload();
+                        } catch (err) {
+                            alert('Failed to import: ' + err.message);
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                input.click();
+            }
+
+            closeModal() {
+                document.getElementById('quizModal').classList.remove('active');
+                document.getElementById('resultsModal').classList.remove('active');
+            }
+
+            exportSessionResults() {
+                if (this.state.quizHistory.length === 0) return;
+                const lastSession = this.state.quizHistory[this.state.quizHistory.length - 1];
+                const dataStr = JSON.stringify(lastSession, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'quiz-results-' + new Date().toISOString().split('T')[0] + '.json';
+                link.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Initialize app
+        const app = new CISSPStudyApp();
+    </script>
+</body>
+</html>
