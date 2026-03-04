@@ -924,6 +924,86 @@
                 font-size: 2rem;
             }
         }
+
+        /* Help / Guidance Text */
+        .help-box {
+            background: rgba(var(--brand-glow), 0.06);
+            border: 1px solid rgba(var(--brand-glow), 0.15);
+            border-radius: var(--r-sm);
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.875rem;
+            line-height: 1.65;
+            color: var(--text-2);
+        }
+
+        .help-box strong {
+            color: var(--text-1);
+            font-weight: 600;
+        }
+
+        .help-box .help-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--brand-400);
+            margin-bottom: 0.5rem;
+        }
+
+        .help-box ol, .help-box ul {
+            margin: 0.5rem 0 0 1.25rem;
+            padding: 0;
+        }
+
+        .help-box li {
+            margin-bottom: 0.35rem;
+        }
+
+        .help-box code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            background: rgba(var(--brand-glow), 0.1);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            color: var(--brand-300);
+        }
+
+        .help-divider {
+            border: none;
+            border-top: 1px solid var(--line-1);
+            margin: 1rem 0;
+        }
+
+        .workflow-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .workflow-step {
+            background: var(--surface-2);
+            border: 1px solid var(--line-1);
+            border-radius: var(--r-xs);
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .workflow-step .step-num {
+            display: inline-block;
+            background: var(--brand-500);
+            color: white;
+            font-weight: 700;
+            font-size: 0.7rem;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -952,6 +1032,10 @@
         <div class="container">
             <!-- Dashboard Tab -->
             <div class="tab-content active" id="dashboard-tab">
+                <div class="help-box">
+                    <div class="help-title">Your CISSP Study Hub</div>
+                    This dashboard tracks your overall progress across all 8 CISSP domains. Your scores, accuracy, and adaptive difficulty level (Associate → Professional → Expert) update automatically after every quiz. <strong>Your progress auto-saves to this browser</strong> — just keep using the same browser and your data persists between sessions. Use "Backup to File" (top right) if you want to transfer progress to another device.
+                </div>
                 <div class="card">
                     <div class="card-header">Dashboard</div>
                     <div class="grid grid-3">
@@ -995,6 +1079,18 @@
 
             <!-- Tonight's Study Tab -->
             <div class="tab-content" id="tonights-tab">
+                <div class="help-box">
+                    <div class="help-title">Nightly Homework Workflow</div>
+                    This tab contains your actual bootcamp homework questions — pulled directly from the Practice Exam PDF and PowerPoint slides for each night of class.
+                    <div class="workflow-steps">
+                        <div class="workflow-step"><span class="step-num">1</span><strong>Select tonight's day</strong> below to load the homework questions assigned for that class session.</div>
+                        <div class="workflow-step"><span class="step-num">2</span><strong>Take the quiz.</strong> Answer all questions. Your answers are scored at the end and wrong answers are saved automatically.</div>
+                        <div class="workflow-step"><span class="step-num">3</span><strong>Review results.</strong> After finishing, click "Export Results" to get your wrong answers formatted for the WRONG-ANSWER-BANK.md file.</div>
+                        <div class="workflow-step"><span class="step-num">4</span><strong>Re-quiz tomorrow.</strong> Come back to the "Re-Quiz Wrong" tab to drill the questions you missed until you master them.</div>
+                    </div>
+                    <hr class="help-divider">
+                    <strong>Schedule:</strong> Mon = Domains 1 & 2 · Tue = Domain 3 · Wed = Domains 3 & 4 · Thu = Domains 4, 5 & 6 · Fri = Domains 7 & 8
+                </div>
                 <div class="card">
                     <div class="card-header">Tonight's Bootcamp Study</div>
                     <div class="form-group">
@@ -1028,6 +1124,16 @@
 
             <!-- Quiz Tab -->
             <div class="tab-content" id="quiz-tab">
+                <div class="help-box">
+                    <div class="help-title">Custom Practice Quiz</div>
+                    Use this tab to build a custom quiz from the <strong>240-question AI-generated bank</strong> (separate from the homework questions in Tonight's Study). Great for extra practice beyond nightly assignments.
+                    <ul>
+                        <li><strong>Random:</strong> Questions pulled randomly from your selected domains.</li>
+                        <li><strong>Weak Domains First:</strong> Prioritizes domains where your accuracy is lowest — use this to target gaps.</li>
+                        <li><strong>CAT Adaptive:</strong> Mimics the real CISSP exam format. Gets harder as you answer correctly, easier when you miss — adjusts your difficulty level (Associate → Professional → Expert) per domain.</li>
+                    </ul>
+                    Wrong answers from these quizzes also feed into the "Re-Quiz Wrong" tab.
+                </div>
                 <div class="card">
                     <div class="card-header">Configure Quiz</div>
                     <div class="grid grid-2">
@@ -1060,6 +1166,15 @@
 
             <!-- Re-Quiz Wrong Tab -->
             <div class="tab-content" id="rewrong-tab">
+                <div class="help-box">
+                    <div class="help-title">Spaced Repetition Review</div>
+                    Every question you get wrong — from homework, custom quizzes, or imported banks — lands here. The system tracks each wrong answer by domain and whether you've <strong>mastered</strong> it (answered correctly on a re-quiz).
+                    <ul>
+                        <li><strong>Auto-Select Weakest:</strong> Automatically checks the domains where you have the most unmastered questions — so you drill where it hurts most.</li>
+                        <li><strong>Mastery:</strong> Get a question right during a re-quiz and it's marked "mastered." Get it wrong again and it stays in the queue.</li>
+                        <li><strong>Daily habit:</strong> Before starting tonight's homework, come here first and re-quiz yesterday's wrong answers. This spaced repetition is the fastest path to retention.</li>
+                    </ul>
+                </div>
                 <div class="card">
                     <div class="card-header">Re-Quiz Wrong Answers</div>
                     <div id="rewrongStatus"></div>
@@ -1080,6 +1195,28 @@
 
             <!-- Bank Sync Tab -->
             <div class="tab-content" id="bank-tab">
+                <div class="help-box">
+                    <div class="help-title">What is the Wrong Answer Bank?</div>
+                    The <code>WRONG-ANSWER-BANK.md</code> file is a Markdown file in your course repo that stores detailed records of every question you've gotten wrong — including the correct answer, why you got it wrong, and a memory hook to help you remember next time.
+                    <hr class="help-divider">
+                    <strong>When to use this:</strong> If you (or your AI tutor) have been maintaining a WRONG-ANSWER-BANK.md file from study sessions outside this web UI, you can import those entries here so they appear in the "Re-Quiz Wrong" tab for drilling.
+                    <hr class="help-divider">
+                    <strong>How it works:</strong>
+                    <ol>
+                        <li>Open your <code>WRONG-ANSWER-BANK.md</code> file (from your repo or wherever you keep it).</li>
+                        <li>Select all the content and copy it.</li>
+                        <li>Paste it into the text area below and click "Import Questions."</li>
+                        <li>The parser looks for entries in this format:</li>
+                    </ol>
+                    <div style="background: var(--surface-2); border-radius: var(--r-xs); padding: 0.75rem 1rem; margin-top: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; line-height: 1.6; color: var(--text-3); overflow-x: auto; white-space: pre;">### Q42 | Domain 1 | Security and Risk Management
+**Question:** What is the primary purpose of...
+**Correct Answer:** B) Risk mitigation
+**Concept:** Risk Management Frameworks
+**Why Wrong:** Confused risk avoidance with mitigation
+**Memory Hook:** Mitigation = reduce, Avoidance = eliminate</div>
+                    <hr class="help-divider">
+                    Imported entries appear in "Re-Quiz Wrong" and won't be duplicated if you import the same file again. Questions imported from the bank are tagged as <code>source: bank</code> so you can tell them apart from questions you missed in quizzes.
+                </div>
                 <div class="card">
                     <div class="card-header">Import from WRONG-ANSWER-BANK.md</div>
                     <div class="form-group">
@@ -1093,6 +1230,10 @@
 
             <!-- History Tab -->
             <div class="tab-content" id="history-tab">
+                <div class="help-box">
+                    <div class="help-title">Session History</div>
+                    Every quiz you complete — homework, custom, or re-quiz — is logged here with the date, score, domains covered, and time taken. Use this to track your improvement over the week and identify which days you struggled. All history is stored locally in your browser alongside your other progress data.
+                </div>
                 <div class="card">
                     <div class="card-header">Quiz History</div>
                     <div id="historyContent"></div>
