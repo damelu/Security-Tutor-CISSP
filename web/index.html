@@ -1092,7 +1092,7 @@
                 <button class="nav-tab" data-tab="tonights">Tonight's Study</button>
                 <button class="nav-tab" data-tab="quiz">Quiz</button>
                 <button class="nav-tab" data-tab="rewrong">Re-Quiz Wrong</button>
-                <button class="nav-tab" data-tab="bank">Bank Sync</button>
+                <button class="nav-tab" data-tab="bank">Folder Sync</button>
                 <button class="nav-tab" data-tab="manage">Manage Bank</button>
                 <button class="nav-tab" data-tab="history">History</button>
             </div>
@@ -1119,7 +1119,7 @@
                         <li><strong>Open your course folder</strong> — In <strong>Cowork</strong>, click the folder icon and select your <code>CISSP Training 2026</code> folder (the one with AGENTS.md, STUDY-GUIDE.md, Student files, etc). In <strong>VS Code / Cursor</strong>, open that same folder as your workspace.</li>
                         <li><strong>Start a new session</strong> — Open a new chat. Copy the prompt from <code>DAILY-PROMPT.md</code> and replace <code>[DAY]</code> with today (e.g., "Tuesday"). The AI reads AGENTS.md first, validates your files, then walks you through 5 phases.</li>
                         <li><strong>The 5 nightly phases:</strong> Lecture Analysis (transcripts) → Homework Quiz (tonight's questions) → Wrong Answer Deep Dive (explanations + memory hooks) → Audio Generation (study audio) → Bank Update (WRONG-ANSWER-BANK.md).</li>
-                        <li><strong>Sync with this web UI:</strong> After your AI session updates WRONG-ANSWER-BANK.md, paste its contents into the "Bank Sync" tab here to import new wrong answers for re-quizzing.</li>
+                        <li><strong>Sync with this web UI:</strong> Connect your study folder in the "Folder Sync" tab and wrong answers auto-save to your folder and WRONG-ANSWER-BANK.md. No manual copy-paste needed.</li>
                         <li><strong>For a quick review quiz</strong> without the full nightly flow, use the prompt from <code>REVIEW-PROMPT.md</code> instead — it generates a 20–30 question quiz weighted by your weakest domains.</li>
                     </ol>
                     The key files are <code>AGENTS.md</code> (system context the AI reads first), <code>DAILY-PROMPT.md</code> (nightly workflow), <code>REVIEW-PROMPT.md</code> (on-demand review), <code>STUDY-GUIDE.md</code> (schedule + homework), and <code>WRONG-ANSWER-BANK.md</code> (your running log of missed questions).
@@ -1173,7 +1173,7 @@
                     <div class="workflow-steps">
                         <div class="workflow-step"><span class="step-num">1</span><strong>Select tonight's day</strong> below to load the homework questions assigned for that class session.</div>
                         <div class="workflow-step"><span class="step-num">2</span><strong>Take the quiz.</strong> Answer all questions. Your answers are scored at the end.</div>
-                        <div class="workflow-step"><span class="step-num">3</span><strong>Everything saves automatically.</strong> Wrong answers go straight to "Re-Quiz Wrong" and a <code>.md</code> file downloads to your computer for pasting into WRONG-ANSWER-BANK.md.</div>
+                        <div class="workflow-step"><span class="step-num">3</span><strong>Everything saves automatically.</strong> Wrong answers go straight to "Re-Quiz Wrong." If you've connected your study folder (Folder Sync tab), they also save directly to your <code>wrong-answers/</code> folder and append to <code>WRONG-ANSWER-BANK.md</code> — no copy-paste needed.</div>
                         <div class="workflow-step"><span class="step-num">4</span><strong>Re-quiz tomorrow.</strong> Before starting new homework, open "Re-Quiz Wrong" first and drill last night's misses.</div>
                     </div>
                     <hr class="help-divider">
@@ -1283,38 +1283,63 @@
                 </div>
             </div>
 
-            <!-- Bank Sync Tab -->
+            <!-- Folder Sync Tab -->
             <div class="tab-content" id="bank-tab">
                 <div class="help-box">
-                    <div class="help-title">What is the Wrong Answer Bank?</div>
-                    The <code>WRONG-ANSWER-BANK.md</code> file is a Markdown file in your course repo that stores detailed records of every question you've gotten wrong — including the correct answer, why you got it wrong, and a memory hook to help you remember next time.
+                    <div class="help-title">Folder Sync — Auto-Save Wrong Answers</div>
+                    <p>Connect your study folder once and wrong answers auto-save directly — no copy-paste needed.</p>
                     <hr class="help-divider">
-                    <strong>When to use this:</strong> If you (or your AI tutor) have been maintaining a WRONG-ANSWER-BANK.md file from study sessions outside this web UI, you can import those entries here so they appear in the "Re-Quiz Wrong" tab for drilling.
+                    <p>When you connect your study folder, every quiz with wrong answers automatically:</p>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>Saves wrong answers to <code>wrong-answers/[day]/wrong-answers-[date].md</code></li>
+                        <li>Appends all entries to <code>WRONG-ANSWER-BANK.md</code> in your study folder</li>
+                        <li>Updates a timestamp showing the last sync time</li>
+                    </ul>
                     <hr class="help-divider">
-                    <strong>How it works:</strong>
-                    <ol>
-                        <li>Open your <code>WRONG-ANSWER-BANK.md</code> file (from your repo or wherever you keep it).</li>
-                        <li>Select all the content and copy it.</li>
-                        <li>Paste it into the text area below and click "Import Questions."</li>
-                        <li>The parser looks for entries in this format:</li>
-                    </ol>
-                    <div style="background: var(--surface-2); border-radius: var(--r-xs); padding: 0.75rem 1rem; margin-top: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; line-height: 1.6; color: var(--text-3); overflow-x: auto; white-space: pre;">### Q42 | Domain 1 | Security and Risk Management
+                    <strong>If your browser doesn't support folder access:</strong> Wrong answers will auto-download as <code>.md</code> files instead. Use Chrome, Edge, or other Chromium-based browsers for direct folder saving. Firefox and Safari don't yet support this API.
+                </div>
+                <div class="card">
+                    <div class="card-header">Folder Connection</div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" id="connectFolderBtn">Connect Study Folder</button>
+                    </div>
+                    <div id="folderStatus" class="mt-2"></div>
+                </div>
+                
+                <div class="card" style="margin-top: 1rem;">
+                    <details style="cursor: pointer;">
+                        <summary style="font-weight: 600; padding: 0.75rem; display: block; user-select: none;">Manual Import (Advanced)</summary>
+                        <div style="padding: 0.75rem; border-top: 1px solid var(--border-color);">
+                            <div class="help-box">
+                                <div class="help-title">What is the Wrong Answer Bank?</div>
+                                The <code>WRONG-ANSWER-BANK.md</code> file is a Markdown file in your course repo that stores detailed records of every question you've gotten wrong — including the correct answer, why you got it wrong, and a memory hook to help you remember next time.
+                                <hr class="help-divider">
+                                <strong>When to use this:</strong> If you (or your AI tutor) have been maintaining a WRONG-ANSWER-BANK.md file from study sessions outside this web UI, you can import those entries here so they appear in the "Re-Quiz Wrong" tab for drilling.
+                                <hr class="help-divider">
+                                <strong>How it works:</strong>
+                                <ol>
+                                    <li>Open your <code>WRONG-ANSWER-BANK.md</code> file (from your repo or wherever you keep it).</li>
+                                    <li>Select all the content and copy it.</li>
+                                    <li>Paste it into the text area below and click "Import Questions."</li>
+                                    <li>The parser looks for entries in this format:</li>
+                                </ol>
+                                <div style="background: var(--surface-2); border-radius: var(--r-xs); padding: 0.75rem 1rem; margin-top: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; line-height: 1.6; color: var(--text-3); overflow-x: auto; white-space: pre;">### Q42 | Domain 1 | Security and Risk Management
 **Question:** What is the primary purpose of...
 **Correct Answer:** B) Risk mitigation
 **Concept:** Risk Management Frameworks
 **Why Wrong:** Confused risk avoidance with mitigation
 **Memory Hook:** Mitigation = reduce, Avoidance = eliminate</div>
-                    <hr class="help-divider">
-                    Imported entries appear in "Re-Quiz Wrong" and won't be duplicated if you import the same file again. Questions imported from the bank are tagged as <code>source: bank</code> so you can tell them apart from questions you missed in quizzes.
-                </div>
-                <div class="card">
-                    <div class="card-header">Import from WRONG-ANSWER-BANK.md</div>
-                    <div class="form-group">
-                        <label class="form-label">Paste WRONG-ANSWER-BANK.md Content:</label>
-                        <textarea id="bankInput" class="form-textarea" placeholder="Paste your WRONG-ANSWER-BANK.md content here..."></textarea>
-                    </div>
-                    <button class="btn btn-primary" onclick="app.importBank()">Import Questions</button>
-                    <div id="bankStatus" class="mt-2"></div>
+                                <hr class="help-divider">
+                                Imported entries appear in "Re-Quiz Wrong" and won't be duplicated if you import the same file again. Questions imported from the bank are tagged as <code>source: bank</code> so you can tell them apart from questions you missed in quizzes.
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Paste WRONG-ANSWER-BANK.md Content:</label>
+                                <textarea id="bankInput" class="form-textarea" placeholder="Paste your WRONG-ANSWER-BANK.md content here..."></textarea>
+                            </div>
+                            <button class="btn btn-primary" onclick="app.importBank()">Import Questions</button>
+                            <div id="bankStatus" class="mt-2"></div>
+                        </div>
+                    </details>
                 </div>
             </div>
 
@@ -1435,6 +1460,7 @@
                 this.currentQuiz = null;
                 this.currentQuestionIndex = 0;
                 this.quizAnswers = {};
+                this.dirHandle = null;
                 this.state = this.loadState();
                 this.init();
             }
@@ -1448,6 +1474,7 @@
                 this.renderDifficultyCheckboxes();
                 this.updateRewrongStatus();
                 this.updateHistory();
+                this.updateFolderStatus();
 
                 // Show auto-save status on load
                 const el = document.getElementById('autoSaveStatus');
@@ -1528,6 +1555,12 @@
                 // Export/Import
                 document.getElementById('exportBtn').addEventListener('click', () => this.exportState());
                 document.getElementById('importBtn').addEventListener('click', () => this.importState());
+
+                // Folder Sync
+                const connectBtn = document.getElementById('connectFolderBtn');
+                if (connectBtn) {
+                    connectBtn.addEventListener('click', () => this.connectFolder());
+                }
             }
 
             showTab(tabName) {
@@ -1548,6 +1581,7 @@
                 if (tabName === 'history') this.updateHistory();
                 if (tabName === 'rewrong') this.updateRewrongStatus();
                 if (tabName === 'manage') this.renderManageTab();
+                if (tabName === 'bank') this.updateFolderStatus();
             }
 
             renderDashboard() {
@@ -2078,7 +2112,11 @@
 
                 if (wrongIds && wrongIds.length > 0) {
                     html += '<p class="text-muted">You have ' + wrongIds.length + ' question(s) to review. They have been added to "Re-Quiz Wrong" automatically.</p>';
-                    html += '<p class="text-muted" style="margin-top: 0.5rem; font-size: 0.85rem;">A <code style="font-family: monospace; background: var(--surface-alt); padding: 0.15rem 0.4rem; border-radius: 4px;">wrong-answers-[date].md</code> file was also downloaded to your computer for pasting into WRONG-ANSWER-BANK.md.</p>';
+                    if (this.dirHandle) {
+                        html += '<p class="text-muted" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--ok-500);">Wrong answers auto-saved to <code style="font-family: monospace; background: var(--surface-alt); padding: 0.15rem 0.4rem; border-radius: 4px;">' + this.dirHandle.name + '/wrong-answers/</code> and appended to WRONG-ANSWER-BANK.md.</p>';
+                    } else {
+                        html += '<p class="text-muted" style="margin-top: 0.5rem; font-size: 0.85rem;">A <code style="font-family: monospace; background: var(--surface-alt); padding: 0.15rem 0.4rem; border-radius: 4px;">wrong-answers-[date].md</code> file was downloaded. Connect your study folder in the "Folder Sync" tab to auto-save directly instead.</p>';
+                    }
                 } else {
                     html += '<p class="text-success" style="color: var(--success);">Perfect score! Congratulations!</p>';
                 }
@@ -2288,16 +2326,160 @@
                 this.showExportModal(markdown);
             }
 
-            autoExportWrongAnswers(wrongIds) {
-                if (!wrongIds || wrongIds.length === 0) return;
+            async connectFolder() {
+                try {
+                    if (!window.showDirectoryPicker) {
+                        document.getElementById('folderStatus').innerHTML = '<p style="color: var(--warn-500);">Your browser doesn't support folder access. Wrong answers will auto-download as .md files instead. Use Chrome or Edge for direct folder saving.</p>';
+                        return;
+                    }
+                    this.dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+                    this.state.folderConnected = true;
+                    this.state.folderName = this.dirHandle.name;
+                    this.saveState();
+                    this.updateFolderStatus();
+                } catch (e) {
+                    if (e.name !== 'AbortError') {
+                        console.error('Folder access error:', e);
+                        document.getElementById('folderStatus').innerHTML = '<p style="color: var(--danger-500);">Failed to connect folder: ' + e.message + '</p>';
+                    }
+                }
+            }
 
+            updateFolderStatus() {
+                const el = document.getElementById('folderStatus');
+                if (!el) return;
+                if (this.dirHandle) {
+                    let html = '<div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: rgba(40, 196, 143, 0.1); border: 1px solid rgba(40, 196, 143, 0.3); border-radius: var(--r-xs);">';
+                    html += '<span style="color: var(--ok-500); font-size: 1.2rem;">✓</span>';
+                    html += '<div><strong style="color: var(--ok-500);">Connected:</strong> <code>' + this.dirHandle.name + '</code>';
+                    if (this.state.lastFolderWrite) {
+                        html += '<br><span style="font-size: 0.8rem; color: var(--text-3);">Last saved: ' + this.state.lastFolderWrite + '</span>';
+                    }
+                    html += '</div></div>';
+                    el.innerHTML = html;
+                    document.getElementById('connectFolderBtn').textContent = 'Change Folder';
+                } else if (this.state.folderConnected) {
+                    el.innerHTML = '<p style="color: var(--warn-500);">Folder was previously connected but access expired. Click "Connect Study Folder" to reconnect.</p>';
+                }
+            }
+
+            async writeWrongAnswersToFolder(wrongIds) {
+                if (!this.dirHandle || !wrongIds || wrongIds.length === 0) return false;
+                
+                try {
+                    // Verify we still have permission
+                    const perm = await this.dirHandle.queryPermission({ mode: 'readwrite' });
+                    if (perm !== 'granted') {
+                        const req = await this.dirHandle.requestPermission({ mode: 'readwrite' });
+                        if (req !== 'granted') return false;
+                    }
+                    
+                    const today = new Date().toISOString().split('T')[0];
+                    const lastSession = this.state.quizHistory[this.state.quizHistory.length - 1];
+                    const dayLabel = lastSession ? (lastSession.day || 'mixed') : 'mixed';
+                    const domainLabel = lastSession ? lastSession.domains.join(', ') : 'Mixed';
+                    
+                    // Build markdown content
+                    let markdown = '## ' + new Date().toLocaleDateString() + ' — ' + domainLabel + '
+';
+                    markdown += '<!-- Auto-exported: ' + today + ' | Entries: ' + wrongIds.length + ' -->
+
+';
+                    
+                    wrongIds.forEach(wrongId => {
+                        const w = this.state.wrongAnswers[wrongId];
+                        if (!w) return;
+                        markdown += '### Q' + (w.id || '') + ' | ' + (DOMAINS[w.domain] || 'Unknown') + ' | ' + (w.domain || 'Unknown') + '
+';
+                        markdown += '**Question:** ' + w.question + '
+';
+                        markdown += '**Correct Answer:** ' + w.correct + '
+';
+                        markdown += '**Difficulty:** ' + (w.difficulty || 'course') + '
+';
+                        markdown += '**Concept:** [fill in]
+';
+                        markdown += '**Why Wrong:** ' + (w.explanation || '[fill in]') + '
+';
+                        markdown += '**Memory Hook:** ' + (w.memoryHook || '[fill in]') + '
+';
+                        markdown += '**Mastered:** No
+';
+                        markdown += '**Times Wrong:** 1
+';
+                        markdown += '**Last Tested:** ' + today + '
+
+';
+                    });
+                    
+                    // 1. Write to wrong-answers/[day]/wrong-answers-[date].md
+                    const waDir = await this.dirHandle.getDirectoryHandle('wrong-answers', { create: true });
+                    const dayDir = await waDir.getDirectoryHandle(dayLabel, { create: true });
+                    const fileName = 'wrong-answers-' + today + '.md';
+                    const fileHandle = await dayDir.getFileHandle(fileName, { create: true });
+                    const writable = await fileHandle.createWritable();
+                    await writable.write(markdown);
+                    await writable.close();
+                    
+                    // 2. Append to WRONG-ANSWER-BANK.md
+                    await this.appendToWrongAnswerBank(markdown, dayLabel, domainLabel);
+                    
+                    this.state.lastFolderWrite = new Date().toLocaleString();
+                    this.saveState();
+                    this.updateFolderStatus();
+                    
+                    return true;
+                } catch (e) {
+                    console.error('Error writing to folder:', e);
+                    return false;
+                }
+            }
+
+            async appendToWrongAnswerBank(markdown, dayLabel, domainLabel) {
+                if (!this.dirHandle) return;
+                
+                try {
+                    let bankContent = '';
+                    let bankHandle;
+                    
+                    try {
+                        bankHandle = await this.dirHandle.getFileHandle('WRONG-ANSWER-BANK.md');
+                        const file = await bankHandle.getFile();
+                        bankContent = await file.text();
+                    } catch (e) {
+                        // File doesn't exist — create with header
+                        bankHandle = await this.dirHandle.getFileHandle('WRONG-ANSWER-BANK.md', { create: true });
+                        bankContent = '# Wrong Answer Bank\n\n| Day | Wrong Count |\n|-----|------------|\n\n---\n\n';
+                    }
+                    
+                    // Append new entries at the end
+                    bankContent += '\n' + markdown;
+                    
+                    const writable = await bankHandle.createWritable();
+                    await writable.write(bankContent);
+                    await writable.close();
+                } catch (e) {
+                    console.error('Error updating WRONG-ANSWER-BANK.md:', e);
+                }
+            }
+
+            async autoExportWrongAnswers(wrongIds) {
+                if (!wrongIds || wrongIds.length === 0) return;
+                
+                // Try writing to connected folder first
+                if (this.dirHandle) {
+                    const success = await this.writeWrongAnswersToFolder(wrongIds);
+                    if (success) return; // Written to folder — no download needed
+                }
+                
+                // Fallback: download as .md file
                 const today = new Date().toISOString().split('T')[0];
                 const lastSession = this.state.quizHistory[this.state.quizHistory.length - 1];
                 const domainLabel = lastSession ? lastSession.domains.join(', ') : 'Mixed';
-
+                
                 let markdown = '## ' + new Date().toLocaleDateString() + ' — ' + domainLabel + '\n';
                 markdown += '<!-- Auto-exported: ' + today + ' | Entries: ' + wrongIds.length + ' -->\n\n';
-
+                
                 wrongIds.forEach(wrongId => {
                     const w = this.state.wrongAnswers[wrongId];
                     if (!w) return;
@@ -2312,8 +2494,7 @@
                     markdown += '**Times Wrong:** 1\n';
                     markdown += '**Last Tested:** ' + today + '\n\n';
                 });
-
-                // Auto-download as .md file
+                
                 const blob = new Blob([markdown], { type: 'text/markdown' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
