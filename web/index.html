@@ -564,19 +564,29 @@
             font-weight: 600;
         }
 
-        .difficulty:contains("Easy") {
+        .difficulty.level-associate {
             background: rgba(40, 196, 143, 0.15);
             color: var(--ok-500);
         }
 
-        .difficulty:contains("Medium") {
+        .difficulty.level-professional {
+            background: rgba(79, 124, 255, 0.15);
+            color: var(--brand-500);
+        }
+
+        .difficulty.level-expert {
             background: rgba(243, 179, 67, 0.15);
             color: var(--warn-500);
         }
 
-        .difficulty:contains("Hard") {
-            background: rgba(255, 95, 109, 0.15);
-            color: var(--danger-500);
+        .difficulty.source-pdf {
+            background: rgba(89, 182, 255, 0.15);
+            color: var(--info-500);
+        }
+
+        .difficulty.source-ppt {
+            background: rgba(243, 179, 67, 0.15);
+            color: var(--warn-500);
         }
 
         .cat-badge {
@@ -1465,6 +1475,128 @@
                 this.init();
             }
 
+            getDefaultState() {
+                return {
+                    domainStats: {},
+                    wrongAnswers: {},
+                    quizHistory: [],
+                    sessions: [],
+                    totalAnswered: 0,
+                    totalCorrect: 0,
+                    streak: 0,
+                    catLevels: {},
+                    lastSessionDate: null,
+                    lastSessionDomains: [],
+                    folderConnected: false,
+                    folderName: null,
+                    lastFolderWrite: null
+                };
+            }
+
+            isPlainObject(value) {
+                return !!value && typeof value === 'object' && !Array.isArray(value);
+            }
+
+            toSafeString(value, fallback = '') {
+                if (typeof value === 'string') return value;
+                if (value === null || value === undefined) return fallback;
+                return String(value);
+            }
+
+            toSafeNonNegativeInt(value, fallback = 0) {
+                const n = Number(value);
+                if (!Number.isFinite(n) || n < 0) return fallback;
+                return Math.floor(n);
+            }
+
+            escapeHTML(value) {
+                return this.toSafeString(value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            escapeAttr(value) {
+                return this.escapeHTML(value).replace(/`/g, '&#96;');
+            }
+
+            isQuizableWrongAnswer(wrongAnswer) {
+                return !!(wrongAnswer && Array.isArray(wrongAnswer.options) && wrongAnswer.options.length > 0);
+            }
+
+            normalizeWrongAnswerEntry(id, value) {
+                if (!this.isPlainObject(value)) return null;
+                const options = Array.isArray(value.options)
+                    ? value.options.filter(opt => typeof opt === 'string')
+                    : [];
+                return {
+                    id: this.toSafeString(value.id || id),
+                    question: this.toSafeString(value.question),
+                    domain: this.toSafeString(value.domain, 'Unknown'),
+                    difficulty: this.toSafeString(value.difficulty, 'unknown'),
+                    correct: this.toSafeString(value.correct),
+                    options,
+                    explanation: this.toSafeString(value.explanation),
+                    memoryHook: this.toSafeString(value.memoryHook),
+                    source: this.toSafeString(value.source, 'quiz'),
+                    mastered: Boolean(value.mastered),
+                    timesWrong: this.toSafeNonNegativeInt(value.timesWrong, 1),
+                    timesAnsweredCorrect: this.toSafeNonNegativeInt(value.timesAnsweredCorrect, 0),
+                    lastTested: this.toSafeString(value.lastTested, '')
+                };
+            }
+
+            sanitizeImportedState(imported, baseState = null) {
+                if (!this.isPlainObject(imported)) {
+                    throw new Error('Imported state must be a JSON object');
+                }
+
+                const defaults = baseState || this.getDefaultState();
+                const sanitized = Object.assign({}, defaults, imported);
+
+                sanitized.domainStats = this.isPlainObject(imported.domainStats) ? imported.domainStats : defaults.domainStats;
+                sanitized.catLevels = this.isPlainObject(imported.catLevels) ? imported.catLevels : defaults.catLevels;
+                sanitized.sessions = Array.isArray(imported.sessions) ? imported.sessions : defaults.sessions;
+                sanitized.quizHistory = Array.isArray(imported.quizHistory)
+                    ? imported.quizHistory.filter(entry => this.isPlainObject(entry)).map(entry => ({
+                        date: this.toSafeString(entry.date, new Date().toISOString()),
+                        score: this.toSafeNonNegativeInt(entry.score, 0),
+                        correct: this.toSafeNonNegativeInt(entry.correct, 0),
+                        total: this.toSafeNonNegativeInt(entry.total, 0),
+                        elapsed: this.toSafeNonNegativeInt(entry.elapsed, 0),
+                        domains: Array.isArray(entry.domains) ? entry.domains.map(d => this.toSafeString(d)) : ['Unknown'],
+                        difficulties: Array.isArray(entry.difficulties) ? entry.difficulties.map(d => this.toSafeString(d)) : ['mixed'],
+                        mode: this.toSafeString(entry.mode, 'custom'),
+                        day: entry.day ? this.toSafeString(entry.day) : null
+                    }))
+                    : defaults.quizHistory;
+
+                sanitized.wrongAnswers = {};
+                if (this.isPlainObject(imported.wrongAnswers)) {
+                    Object.entries(imported.wrongAnswers).forEach(([id, entry]) => {
+                        const normalized = this.normalizeWrongAnswerEntry(id, entry);
+                        if (normalized) {
+                            sanitized.wrongAnswers[id] = normalized;
+                        }
+                    });
+                }
+
+                sanitized.totalAnswered = this.toSafeNonNegativeInt(imported.totalAnswered, defaults.totalAnswered);
+                sanitized.totalCorrect = this.toSafeNonNegativeInt(imported.totalCorrect, defaults.totalCorrect);
+                sanitized.streak = this.toSafeNonNegativeInt(imported.streak, defaults.streak);
+                sanitized.lastSessionDate = imported.lastSessionDate ? this.toSafeString(imported.lastSessionDate) : null;
+                sanitized.lastSessionDomains = Array.isArray(imported.lastSessionDomains)
+                    ? imported.lastSessionDomains.map(d => this.toSafeString(d))
+                    : defaults.lastSessionDomains;
+                sanitized.folderConnected = Boolean(imported.folderConnected);
+                sanitized.folderName = imported.folderName ? this.toSafeString(imported.folderName) : null;
+                sanitized.lastFolderWrite = imported.lastFolderWrite ? this.toSafeString(imported.lastFolderWrite) : null;
+
+                return sanitized;
+            }
+
             init() {
                 this.loadQuestions();
                 this.setupEventListeners();
@@ -1484,37 +1616,44 @@
             }
 
             loadState() {
-                const saved = localStorage.getItem('cissp_state');
-                if (saved) {
-                    try {
-                        return JSON.parse(saved);
-                    } catch (e) {
-                        console.error('Failed to load state:', e);
-                    }
+                const defaults = this.getDefaultState();
+                let saved = null;
+                try {
+                    saved = localStorage.getItem('cissp_state');
+                } catch (e) {
+                    console.error('Browser storage is not available:', e);
+                    return defaults;
                 }
-                return {
-                    domainStats: {},
-                    wrongAnswers: {},
-                    quizHistory: [],
-                    sessions: [],
-                    totalAnswered: 0,
-                    totalCorrect: 0,
-                    streak: 0,
-                    catLevels: {},
-                    lastSessionDate: null,
-                    lastSessionDomains: []
-                };
+
+                if (!saved) return defaults;
+
+                try {
+                    const parsed = JSON.parse(saved);
+                    return this.sanitizeImportedState(parsed, defaults);
+                } catch (e) {
+                    console.error('Failed to load state:', e);
+                    return defaults;
+                }
             }
 
             saveState() {
-                localStorage.setItem('cissp_state', JSON.stringify(this.state));
                 const el = document.getElementById('autoSaveStatus');
-                if (el) {
+                try {
+                    localStorage.setItem('cissp_state', JSON.stringify(this.state));
+                    if (el) {
+                        const now = new Date();
+                        const time = now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                        el.textContent = 'Auto-saved ' + time;
+                        el.style.color = 'var(--success)';
+                        setTimeout(() => { el.style.color = 'var(--text-muted)'; }, 2000);
+                    }
+                } catch (e) {
+                    console.error('Failed to save state:', e);
+                    if (!el) return;
                     const now = new Date();
                     const time = now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-                    el.textContent = 'Auto-saved ' + time;
-                    el.style.color = 'var(--success)';
-                    setTimeout(() => { el.style.color = 'var(--text-muted)'; }, 2000);
+                    el.textContent = 'Auto-save failed ' + time + ' (storage unavailable/full)';
+                    el.style.color = 'var(--danger-500)';
                 }
             }
 
@@ -1621,10 +1760,13 @@
                 const lastSessionDiv = document.getElementById('lastSessionSummary');
                 if (this.state.quizHistory.length > 0) {
                     const lastSession = this.state.quizHistory[this.state.quizHistory.length - 1];
+                    const safeDomains = Array.isArray(lastSession.domains)
+                        ? lastSession.domains.map(d => this.escapeHTML(d)).join(', ')
+                        : 'Unknown';
                     lastSessionDiv.innerHTML = '<p><strong>Date:</strong> ' + new Date(lastSession.date).toLocaleDateString() + '</p>' +
                         '<p><strong>Score:</strong> ' + lastSession.score + '%</p>' +
                         '<p><strong>Questions:</strong> ' + lastSession.correct + '/' + lastSession.total + '</p>' +
-                        '<p><strong>Domains:</strong> ' + lastSession.domains.join(', ') + '</p>' +
+                        '<p><strong>Domains:</strong> ' + safeDomains + '</p>' +
                         '<p><strong>Time:</strong> ' + Math.round(lastSession.elapsed / 60) + ' minutes</p>';
                 } else {
                     lastSessionDiv.innerHTML = '<p class="text-muted">No sessions yet. Start a quiz to begin!</p>';
@@ -1839,13 +1981,19 @@
 
             startReQuiz() {
                 const selectedDomains = Array.from(document.querySelectorAll('input[name="rewrongDomain"]:checked')).map(el => el.value);
-                const wrongIds = Object.keys(this.state.wrongAnswers).filter(id => {
+                const selectedWrongIds = Object.keys(this.state.wrongAnswers).filter(id => {
                     const w = this.state.wrongAnswers[id];
-                    return selectedDomains.includes(w.domain) && !w.mastered;
+                    return !!w && selectedDomains.includes(w.domain) && !w.mastered;
                 });
+                const wrongIds = selectedWrongIds.filter(id => this.isQuizableWrongAnswer(this.state.wrongAnswers[id]));
+                const missingOptions = selectedWrongIds.length - wrongIds.length;
 
                 if (wrongIds.length === 0) {
-                    alert('No unmastered wrong answers in the selected domains');
+                    if (missingOptions > 0) {
+                        alert('Selected questions are missing answer options and cannot be re-quizzed yet. Add options in Manage Bank first.');
+                    } else {
+                        alert('No unmastered wrong answers in the selected domains');
+                    }
                     return;
                 }
 
@@ -1895,6 +2043,12 @@
                 const isLast = qIndex === (quiz.mode === 're-quiz' ? quiz.wrongIds.length - 1 : quiz.questions.length - 1);
                 const progress = qIndex + 1;
                 const total = quiz.mode === 're-quiz' ? quiz.wrongIds.length : quiz.questions.length;
+                const difficultyLabel = question.isHomework
+                    ? (question.source === 'powerpoint' ? 'PPT' : 'PDF')
+                    : question.difficulty;
+                const difficultyClass = question.isHomework
+                    ? (question.source === 'powerpoint' ? 'source-ppt' : 'source-pdf')
+                    : 'level-' + this.toSafeString(question.difficulty, 'associate');
 
                 let html = '<div class="quiz-progress">' +
                     '<div class="progress-text">' +
@@ -1909,11 +2063,11 @@
                     '<div class="question-header">' +
                     '<div><div class="question-number">' + (question.isHomework ? '#' + question.number : 'Q' + (qIndex + 1)) + '</div></div>' +
                     '<div class="question-meta">' +
-                    '<span class="badge domain">' + (question.source_label || question.domain) + '</span>' +
-                    '<span class="badge difficulty">' + (question.isHomework ? (question.source === 'powerpoint' ? 'PPT' : 'PDF') : question.difficulty) + '</span>' +
+                    '<span class="badge domain">' + this.escapeHTML(question.source_label || question.domain) + '</span>' +
+                    '<span class="badge difficulty ' + this.escapeAttr(difficultyClass) + '">' + this.escapeHTML(difficultyLabel) + '</span>' +
                     '</div>' +
                     '</div>' +
-                    '<div class="question-text">' + question.question + '</div>' +
+                    '<div class="question-text">' + this.escapeHTML(question.question) + '</div>' +
                     '<div class="options">';
 
                 if (question.options && question.options.length > 0) {
@@ -1923,11 +2077,11 @@
                     options.forEach((option, idx) => {
                         const isSelected = this.quizAnswers[qIndex] === option;
                         const selectedClass = isSelected ? 'selected' : '';
-                        const escapedOption = option.replace(/'/g, "\\\'");
+                        const escapedOption = this.escapeAttr(option);
                         
                         html += '<label class="option ' + selectedClass + '">' +
-                            '<input type="radio" name="answer_' + qIndex + '" value="' + escapedOption + '" onchange="app.selectAnswer(' + qIndex + ', \'' + escapedOption + '\')">' +
-                            option +
+                            '<input type="radio" name="answer_' + qIndex + '" value="' + escapedOption + '"' + (isSelected ? ' checked' : '') + '>' +
+                            this.escapeHTML(option) +
                             '</label>';
                     });
                 } else {
@@ -1942,17 +2096,24 @@
                     '</button>' +
                     '</div>' +
                     '<div>' +
-                    '<button class="btn btn-primary" onclick="app.nextQuestion()" ' + (!this.quizAnswers[qIndex] ? 'disabled' : '') + '>' +
+                    '<button class="btn btn-primary" id="nextQuestionBtn" onclick="app.nextQuestion()" ' + (!this.quizAnswers[qIndex] ? 'disabled' : '') + '>' +
                     (isLast ? 'Finish' : 'Next') +
                     '</button>' +
                     '</div>' +
                     '</div>';
 
                 document.getElementById('quizContent').innerHTML = html;
+                document.querySelectorAll('input[name="answer_' + qIndex + '"]').forEach(input => {
+                    input.addEventListener('change', (e) => {
+                        this.selectAnswer(qIndex, e.target.value);
+                    });
+                });
             }
 
             selectAnswer(qIndex, answer) {
                 this.quizAnswers[qIndex] = answer;
+                const nextBtn = document.getElementById('nextQuestionBtn');
+                if (nextBtn) nextBtn.disabled = false;
             }
 
             nextQuestion() {
@@ -1992,9 +2153,9 @@
                         } else {
                             wrongData.mastered = false;
                             wrongIds.push(wrongId);
+                            wrongData.timesWrong = (wrongData.timesWrong || 0) + 1;
                         }
                         wrongData.lastTested = new Date().toISOString().split('T')[0];
-                        wrongData.timesWrong = (wrongData.timesWrong || 0) + 1;
                     });
                 } else {
                     quiz.questions.forEach((question, idx) => {
@@ -2033,6 +2194,10 @@
                     });
 
                     // Update domain stats
+                    const answerByQuestion = new Map();
+                    quiz.questions.forEach((question, idx) => {
+                        answerByQuestion.set(question, this.quizAnswers[idx]);
+                    });
                     quiz.domains.forEach(domain => {
                         if (!this.state.domainStats[domain]) {
                             this.state.domainStats[domain] = { correct: 0, total: 0, byDifficulty: {} };
@@ -2040,7 +2205,7 @@
                         const domainQuestions = quiz.questions.filter(q => q.domain === domain);
                         const domainCorrect = domainQuestions.filter(q => {
                             const correctOption = q.options.find(o => o.startsWith(q.correct + ')'));
-                            const userAnswer = this.quizAnswers[quiz.questions.indexOf(q)];
+                            const userAnswer = answerByQuestion.get(q);
                             let match = (userAnswer === correctOption);
                             if (!match && q.accept_also && userAnswer) {
                                 const acceptLetters = q.accept_also.split(' or ').map(l => l.trim());
@@ -2084,7 +2249,8 @@
                     elapsed,
                     domains: quiz.domains || ['Re-Quiz'],
                     difficulties: quiz.difficulties || ['mixed'],
-                    mode: quiz.mode
+                    mode: quiz.mode,
+                    day: quiz.bootcampDay || null
                 };
 
                 this.state.quizHistory.push(historyEntry);
@@ -2128,7 +2294,13 @@
 
                 // Auto-download wrong answers as .md file
                 if (wrongIds && wrongIds.length > 0) {
-                    this.autoExportWrongAnswers(wrongIds);
+                    this.autoExportWrongAnswers(wrongIds).catch((e) => {
+                        console.error('Auto-export failed:', e);
+                        const status = document.getElementById('folderStatus');
+                        if (!status) return;
+                        const message = e && e.message ? this.escapeHTML(e.message) : 'Unknown error';
+                        status.innerHTML = '<p style="color: var(--danger-500);">Auto-export failed: ' + message + '</p>';
+                    });
                 }
             }
 
@@ -2147,12 +2319,15 @@
 
                 const unmastered = wrongIds.filter(id => !this.state.wrongAnswers[id].mastered);
                 const mastered = wrongIds.length - unmastered.length;
+                const unavailable = wrongIds.filter(id => !this.isQuizableWrongAnswer(this.state.wrongAnswers[id]));
 
                 // Build domain breakdown from wrong answers
                 const domainCounts = {};
                 const domainUnmastered = {};
                 wrongIds.forEach(id => {
                     const w = this.state.wrongAnswers[id];
+                    if (!w) return;
+                    if (!this.isQuizableWrongAnswer(w)) return;
                     const d = w.domain || 'Unknown';
                     domainCounts[d] = (domainCounts[d] || 0) + 1;
                     if (!w.mastered) {
@@ -2162,7 +2337,10 @@
 
                 container.innerHTML = '<p><strong>Total Wrong Answers:</strong> ' + wrongIds.length + '</p>' +
                     '<p><strong>Still Learning:</strong> ' + unmastered.length + '</p>' +
-                    '<p><strong>Mastered:</strong> ' + mastered + '</p>';
+                    '<p><strong>Mastered:</strong> ' + mastered + '</p>' +
+                    (unavailable.length > 0
+                        ? '<p class="text-muted">Note: ' + unavailable.length + ' item(s) are missing options and cannot be re-quizzed yet.</p>'
+                        : '');
 
                 // Render domain checkboxes with counts
                 filterDiv.style.display = 'block';
@@ -2173,9 +2351,11 @@
                     const still = domainUnmastered[domain] || 0;
                     const pct = Math.round((still / total) * 100);
                     const barColor = pct > 60 ? 'var(--danger)' : pct > 30 ? 'var(--warning)' : 'var(--success)';
+                    const safeDomain = this.escapeHTML(domain);
+                    const safeDomainAttr = this.escapeAttr(domain);
                     cbHtml += '<label style="display: flex; align-items: center; margin-bottom: 0.5rem; cursor: pointer;">' +
-                        '<input type="checkbox" name="rewrongDomain" value="' + domain + '" checked onchange="app.updateRewrongCount()" style="margin-right: 0.5rem;">' +
-                        '<span style="flex: 1;">' + domain + '</span>' +
+                        '<input type="checkbox" name="rewrongDomain" value="' + safeDomainAttr + '" checked style="margin-right: 0.5rem;">' +
+                        '<span style="flex: 1;">' + safeDomain + '</span>' +
                         '<span style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">' +
                         '<span style="width: 60px; height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden;">' +
                         '<span style="display:block; width:' + pct + '%; height:100%; background:' + barColor + ';"></span></span>' +
@@ -2183,6 +2363,9 @@
                         '</label>';
                 });
                 checkboxDiv.innerHTML = cbHtml;
+                checkboxDiv.querySelectorAll('input[name="rewrongDomain"]').forEach(cb => {
+                    cb.addEventListener('change', () => this.updateRewrongCount());
+                });
 
                 this.rewrongAutoSelect();
                 this.updateRewrongCount();
@@ -2199,7 +2382,7 @@
                 const domainUnmastered = {};
                 wrongIds.forEach(id => {
                     const w = this.state.wrongAnswers[id];
-                    if (!w.mastered) {
+                    if (!w.mastered && this.isQuizableWrongAnswer(w)) {
                         const d = w.domain || 'Unknown';
                         domainUnmastered[d] = (domainUnmastered[d] || 0) + 1;
                     }
@@ -2219,7 +2402,7 @@
                 const selectedDomains = Array.from(document.querySelectorAll('input[name="rewrongDomain"]:checked')).map(el => el.value);
                 const wrongIds = Object.keys(this.state.wrongAnswers).filter(id => {
                     const w = this.state.wrongAnswers[id];
-                    return selectedDomains.includes(w.domain) && !w.mastered;
+                    return !!w && selectedDomains.includes(w.domain) && !w.mastered && this.isQuizableWrongAnswer(w);
                 });
                 document.getElementById('rewrongCount').textContent = wrongIds.length;
                 document.getElementById('rewrongStartBtn').disabled = wrongIds.length === 0;
@@ -2286,12 +2469,15 @@
                     const date = new Date(entry.date);
                     const dateStr = date.toLocaleDateString();
                     const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const safeDomains = Array.isArray(entry.domains)
+                        ? entry.domains.map(d => this.escapeHTML(d)).join(', ')
+                        : 'Unknown';
 
                     html += '<div class="history-row">' +
                         '<div class="history-date">' + dateStr + '</div>' +
                         '<div class="history-score">' + entry.score + '%</div>' +
                         '<div class="text-muted">' + entry.correct + '/' + entry.total + '</div>' +
-                        '<div class="text-muted">' + entry.domains.join(', ') + '</div>' +
+                        '<div class="text-muted">' + safeDomains + '</div>' +
                         '<div class="text-muted">' + timeStr + '</div>' +
                         '</div>';
                 });
@@ -2329,7 +2515,7 @@
             async connectFolder() {
                 try {
                     if (!window.showDirectoryPicker) {
-                        document.getElementById('folderStatus').innerHTML = '<p style="color: var(--warn-500);">Your browser doesn't support folder access. Wrong answers will auto-download as .md files instead. Use Chrome or Edge for direct folder saving.</p>';
+                        document.getElementById('folderStatus').innerHTML = '<p style="color: var(--warn-500);">Your browser does not support folder access. Wrong answers will auto-download as .md files instead. Use Chrome or Edge for direct folder saving.</p>';
                         return;
                     }
                     this.dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
@@ -2340,7 +2526,8 @@
                 } catch (e) {
                     if (e.name !== 'AbortError') {
                         console.error('Folder access error:', e);
-                        document.getElementById('folderStatus').innerHTML = '<p style="color: var(--danger-500);">Failed to connect folder: ' + e.message + '</p>';
+                        const message = e && e.message ? this.escapeHTML(e.message) : 'Unknown error';
+                        document.getElementById('folderStatus').innerHTML = '<p style="color: var(--danger-500);">Failed to connect folder: ' + message + '</p>';
                     }
                 }
             }
@@ -2351,7 +2538,7 @@
                 if (this.dirHandle) {
                     let html = '<div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: rgba(40, 196, 143, 0.1); border: 1px solid rgba(40, 196, 143, 0.3); border-radius: var(--r-xs);">';
                     html += '<span style="color: var(--ok-500); font-size: 1.2rem;">✓</span>';
-                    html += '<div><strong style="color: var(--ok-500);">Connected:</strong> <code>' + this.dirHandle.name + '</code>';
+                    html += '<div><strong style="color: var(--ok-500);">Connected:</strong> <code>' + this.escapeHTML(this.dirHandle.name) + '</code>';
                     if (this.state.lastFolderWrite) {
                         html += '<br><span style="font-size: 0.8rem; color: var(--text-3);">Last saved: ' + this.state.lastFolderWrite + '</span>';
                     }
@@ -2380,36 +2567,22 @@
                     const domainLabel = lastSession ? lastSession.domains.join(', ') : 'Mixed';
                     
                     // Build markdown content
-                    let markdown = '## ' + new Date().toLocaleDateString() + ' — ' + domainLabel + '
-';
-                    markdown += '<!-- Auto-exported: ' + today + ' | Entries: ' + wrongIds.length + ' -->
-
-';
+                    let markdown = '## ' + new Date().toLocaleDateString() + ' — ' + domainLabel + '\n';
+                    markdown += '<!-- Auto-exported: ' + today + ' | Entries: ' + wrongIds.length + ' -->\n\n';
                     
                     wrongIds.forEach(wrongId => {
                         const w = this.state.wrongAnswers[wrongId];
                         if (!w) return;
-                        markdown += '### Q' + (w.id || '') + ' | ' + (DOMAINS[w.domain] || 'Unknown') + ' | ' + (w.domain || 'Unknown') + '
-';
-                        markdown += '**Question:** ' + w.question + '
-';
-                        markdown += '**Correct Answer:** ' + w.correct + '
-';
-                        markdown += '**Difficulty:** ' + (w.difficulty || 'course') + '
-';
-                        markdown += '**Concept:** [fill in]
-';
-                        markdown += '**Why Wrong:** ' + (w.explanation || '[fill in]') + '
-';
-                        markdown += '**Memory Hook:** ' + (w.memoryHook || '[fill in]') + '
-';
-                        markdown += '**Mastered:** No
-';
-                        markdown += '**Times Wrong:** 1
-';
-                        markdown += '**Last Tested:** ' + today + '
-
-';
+                        markdown += '### Q' + (w.id || '') + ' | ' + (DOMAINS[w.domain] || 'Unknown') + ' | ' + (w.domain || 'Unknown') + '\n';
+                        markdown += '**Question:** ' + w.question + '\n';
+                        markdown += '**Correct Answer:** ' + w.correct + '\n';
+                        markdown += '**Difficulty:** ' + (w.difficulty || 'course') + '\n';
+                        markdown += '**Concept:** [fill in]\n';
+                        markdown += '**Why Wrong:** ' + (w.explanation || '[fill in]') + '\n';
+                        markdown += '**Memory Hook:** ' + (w.memoryHook || '[fill in]') + '\n';
+                        markdown += '**Mastered:** No\n';
+                        markdown += '**Times Wrong:** 1\n';
+                        markdown += '**Last Tested:** ' + today + '\n\n';
                     });
                     
                     // 1. Write to wrong-answers/[day]/wrong-answers-[date].md
@@ -2447,7 +2620,7 @@
                         const file = await bankHandle.getFile();
                         bankContent = await file.text();
                     } catch (e) {
-                        // File doesn't exist — create with header
+                        // File does not exist — create with header
                         bankHandle = await this.dirHandle.getFileHandle('WRONG-ANSWER-BANK.md', { create: true });
                         bankContent = '# Wrong Answer Bank\n\n| Day | Wrong Count |\n|-----|------------|\n\n---\n\n';
                     }
@@ -2591,36 +2764,46 @@
                     // Domain separator
                     if (w.domain !== currentDomain) {
                         currentDomain = w.domain;
-                        html += '<div style="font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--brand-400); margin: 1.25rem 0 0.5rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--line-1);">' + currentDomain + '</div>';
+                        html += '<div style="font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--brand-400); margin: 1.25rem 0 0.5rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--line-1);">' + this.escapeHTML(currentDomain) + '</div>';
                     }
 
                     const masteredClass = w.mastered ? ' is-mastered' : '';
-                    const escapedId = (w.id || '').replace(/'/g, "\\'");
+                    const safeId = this.escapeAttr(w.id || '');
 
                     html += '<div class="manage-item' + masteredClass + '">' +
                         '<div class="manage-item-header">' +
                         '<div class="manage-item-meta">' +
-                        '<span class="badge">' + (w.source || 'quiz') + '</span>' +
-                        '<span class="badge">' + (w.difficulty || 'unknown') + '</span>' +
+                        '<span class="badge">' + this.escapeHTML(w.source || 'quiz') + '</span>' +
+                        '<span class="badge">' + this.escapeHTML(w.difficulty || 'unknown') + '</span>' +
                         (w.mastered ? '<span class="badge" style="border-color: var(--ok-500); color: var(--ok-500);">Mastered</span>' : '<span class="badge" style="border-color: var(--warn-500); color: var(--warn-500);">Unmastered</span>') +
                         '<span class="badge">Wrong ' + (w.timesWrong || 1) + 'x</span>' +
-                        (w.lastTested ? '<span class="badge">Last: ' + w.lastTested + '</span>' : '') +
+                        (w.lastTested ? '<span class="badge">Last: ' + this.escapeHTML(w.lastTested) + '</span>' : '') +
                         '</div>' +
                         '</div>' +
-                        '<div class="manage-item-question">' + (w.question || 'No question text') + '</div>' +
-                        '<div class="manage-item-answer">Correct: ' + (w.correct || 'N/A') + '</div>' +
-                        (w.explanation ? '<div style="font-size: 0.8rem; color: var(--text-3); margin-bottom: 0.5rem;">' + w.explanation + '</div>' : '') +
+                        '<div class="manage-item-question">' + this.escapeHTML(w.question || 'No question text') + '</div>' +
+                        '<div class="manage-item-answer">Correct: ' + this.escapeHTML(w.correct || 'N/A') + '</div>' +
+                        (w.explanation ? '<div style="font-size: 0.8rem; color: var(--text-3); margin-bottom: 0.5rem;">' + this.escapeHTML(w.explanation) + '</div>' : '') +
                         '<div class="manage-item-actions">' +
                         (w.mastered
-                            ? '<button class="btn btn-secondary btn-sm" onclick="app.markQuestion(\'' + escapedId + '\', false)">Mark Unmastered</button>'
-                            : '<button class="btn btn-success btn-sm" onclick="app.markQuestion(\'' + escapedId + '\', true)">Mark Mastered</button>'
+                            ? '<button class="btn btn-secondary btn-sm" data-action="mark-unmastered" data-id="' + safeId + '">Mark Unmastered</button>'
+                            : '<button class="btn btn-success btn-sm" data-action="mark-mastered" data-id="' + safeId + '">Mark Mastered</button>'
                         ) +
-                        '<button class="btn btn-danger btn-sm" onclick="app.removeQuestion(\'' + escapedId + '\')">Remove</button>' +
+                        '<button class="btn btn-danger btn-sm" data-action="remove" data-id="' + safeId + '">Remove</button>' +
                         '</div>' +
                         '</div>';
                 });
 
                 listDiv.innerHTML = html;
+                listDiv.querySelectorAll('button[data-action]').forEach(btn => {
+                    btn.addEventListener('click', (event) => {
+                        const action = event.currentTarget.dataset.action;
+                        const wrongId = event.currentTarget.dataset.id;
+                        if (!wrongId) return;
+                        if (action === 'mark-mastered') this.markQuestion(wrongId, true);
+                        if (action === 'mark-unmastered') this.markQuestion(wrongId, false);
+                        if (action === 'remove') this.removeQuestion(wrongId);
+                    });
+                });
                 bulkDiv.style.display = filtered.length > 0 ? 'block' : 'none';
             }
 
@@ -2696,7 +2879,11 @@
             resetAllProgress() {
                 if (!confirm('This will permanently erase ALL data — quiz history, wrong answers, domain stats, everything. Are you sure?')) return;
                 if (!confirm('Final confirmation: wipe everything and start fresh?')) return;
-                localStorage.removeItem('cissp_state');
+                try {
+                    localStorage.removeItem('cissp_state');
+                } catch (e) {
+                    console.error('Failed to clear browser state:', e);
+                }
                 location.reload();
             }
 
@@ -2731,7 +2918,7 @@
                     reader.onload = (event) => {
                         try {
                             const imported = JSON.parse(event.target.result);
-                            this.state = Object.assign({}, this.state, imported);
+                            this.state = this.sanitizeImportedState(imported, this.getDefaultState());
                             this.saveState();
                             alert('State imported successfully!');
                             location.reload();
