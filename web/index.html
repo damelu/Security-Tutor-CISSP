@@ -991,6 +991,82 @@
             font-size: 0.85rem;
         }
 
+        /* Manage Bank */
+        .manage-item {
+            background: var(--surface-2);
+            border: 1px solid var(--line-1);
+            border-radius: var(--r-sm);
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            transition: border-color var(--dur-base) var(--ease-standard);
+        }
+
+        .manage-item:hover {
+            border-color: var(--brand-500);
+        }
+
+        .manage-item.is-mastered {
+            opacity: 0.6;
+            border-color: var(--ok-500);
+        }
+
+        .manage-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .manage-item-meta {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            font-size: 0.75rem;
+        }
+
+        .manage-item-meta .badge {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.7rem;
+        }
+
+        .manage-item-question {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--text-1);
+            margin-bottom: 0.5rem;
+        }
+
+        .manage-item-answer {
+            font-size: 0.85rem;
+            color: var(--ok-500);
+            margin-bottom: 0.5rem;
+        }
+
+        .manage-item-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .manage-item-actions button {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+        }
+
+        .manage-count-bar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+            font-size: 0.85rem;
+            color: var(--text-2);
+        }
+
+        .manage-count-bar strong {
+            color: var(--text-1);
+        }
+
         .workflow-step .step-num {
             display: inline-block;
             background: var(--brand-500);
@@ -1017,6 +1093,7 @@
                 <button class="nav-tab" data-tab="quiz">Quiz</button>
                 <button class="nav-tab" data-tab="rewrong">Re-Quiz Wrong</button>
                 <button class="nav-tab" data-tab="bank">Bank Sync</button>
+                <button class="nav-tab" data-tab="manage">Manage Bank</button>
                 <button class="nav-tab" data-tab="history">History</button>
             </div>
             <div class="nav-actions">
@@ -1241,6 +1318,45 @@
                 </div>
             </div>
 
+            <!-- Manage Bank Tab -->
+            <div class="tab-content" id="manage-tab">
+                <div class="help-box">
+                    <div class="help-title">Manage Your Wrong Answer Bank</div>
+                    Browse every question you've gotten wrong, sorted by domain. You can manually mark questions as "mastered" if you've studied them outside this tool, or remove questions entirely. Use the domain filter to focus on specific areas.
+                </div>
+                <div class="card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                        <span>Wrong Answer Bank</span>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <select id="manageDomainFilter" class="form-select" style="width: auto; min-width: 200px; font-size: 0.85rem; padding: 0.4rem 0.6rem;" onchange="app.renderManageTab()">
+                                <option value="all">All Domains</option>
+                            </select>
+                            <select id="manageStatusFilter" class="form-select" style="width: auto; min-width: 140px; font-size: 0.85rem; padding: 0.4rem 0.6rem;" onchange="app.renderManageTab()">
+                                <option value="unmastered">Unmastered Only</option>
+                                <option value="mastered">Mastered Only</option>
+                                <option value="all">All</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="manageSummary" style="margin-bottom: 1rem;"></div>
+                    <div id="manageList"></div>
+                    <div id="manageBulkActions" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="btn btn-success btn-sm" onclick="app.bulkMarkMastered()">Mark Filtered as Mastered</button>
+                            <button class="btn btn-danger btn-sm" onclick="app.bulkRemoveFiltered()">Remove Filtered</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: 1rem;">
+                    <div class="card-header" style="color: var(--error);">Danger Zone</div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">These actions cannot be undone. Consider using "Backup to File" first.</p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn btn-danger btn-sm" onclick="app.clearAllWrongAnswers()">Clear All Wrong Answers</button>
+                        <button class="btn btn-danger btn-sm" onclick="app.resetAllProgress()">Reset Everything (Full Wipe)</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- History Tab -->
             <div class="tab-content" id="history-tab">
                 <div class="help-box">
@@ -1248,7 +1364,10 @@
                     Every quiz you complete — homework, custom, or re-quiz — is logged here with the date, score, domains covered, and time taken. Use this to track your improvement over the week and identify which days you struggled. All history is stored locally in your browser alongside your other progress data.
                 </div>
                 <div class="card">
-                    <div class="card-header">Quiz History</div>
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Quiz History</span>
+                        <button class="btn btn-danger btn-sm" onclick="app.clearHistory()" style="font-size: 0.75rem;">Clear History</button>
+                    </div>
                     <div id="historyContent"></div>
                 </div>
             </div>
@@ -1428,6 +1547,7 @@
                 if (tabName === 'dashboard') this.renderDashboard();
                 if (tabName === 'history') this.updateHistory();
                 if (tabName === 'rewrong') this.updateRewrongStatus();
+                if (tabName === 'manage') this.renderManageTab();
             }
 
             renderDashboard() {
@@ -2218,6 +2338,196 @@
                     '</div>';
                 document.body.appendChild(modal);
             }
+
+            // === Manage Bank Methods ===
+
+            renderManageTab() {
+                const domainFilter = document.getElementById('manageDomainFilter').value;
+                const statusFilter = document.getElementById('manageStatusFilter').value;
+                const listDiv = document.getElementById('manageList');
+                const summaryDiv = document.getElementById('manageSummary');
+                const bulkDiv = document.getElementById('manageBulkActions');
+
+                // Populate domain filter dropdown (only on first render or if domains change)
+                const domainSelect = document.getElementById('manageDomainFilter');
+                const allWrongs = Object.values(this.state.wrongAnswers);
+                const domains = [...new Set(allWrongs.map(w => w.domain))].sort();
+
+                // Preserve current selection while updating options
+                const currentVal = domainSelect.value;
+                const existingOpts = Array.from(domainSelect.options).map(o => o.value);
+                const neededOpts = ['all', ...domains];
+                if (JSON.stringify(existingOpts) !== JSON.stringify(neededOpts)) {
+                    domainSelect.innerHTML = '<option value="all">All Domains</option>';
+                    domains.forEach(d => {
+                        const opt = document.createElement('option');
+                        opt.value = d;
+                        opt.textContent = d;
+                        domainSelect.appendChild(opt);
+                    });
+                    domainSelect.value = neededOpts.includes(currentVal) ? currentVal : 'all';
+                }
+
+                // Filter entries
+                let filtered = allWrongs;
+                if (domainFilter !== 'all') {
+                    filtered = filtered.filter(w => w.domain === domainFilter);
+                }
+                if (statusFilter === 'unmastered') {
+                    filtered = filtered.filter(w => !w.mastered);
+                } else if (statusFilter === 'mastered') {
+                    filtered = filtered.filter(w => w.mastered);
+                }
+
+                // Sort: unmastered first, then by domain, then by timesWrong desc
+                filtered.sort((a, b) => {
+                    if (a.mastered !== b.mastered) return a.mastered ? 1 : -1;
+                    if (a.domain !== b.domain) return a.domain.localeCompare(b.domain);
+                    return (b.timesWrong || 0) - (a.timesWrong || 0);
+                });
+
+                // Summary bar
+                const totalAll = allWrongs.length;
+                const unmasteredAll = allWrongs.filter(w => !w.mastered).length;
+                const masteredAll = totalAll - unmasteredAll;
+                summaryDiv.innerHTML = '<div class="manage-count-bar">' +
+                    '<span><strong>' + totalAll + '</strong> total</span>' +
+                    '<span style="color: var(--warn-500);"><strong>' + unmasteredAll + '</strong> unmastered</span>' +
+                    '<span style="color: var(--ok-500);"><strong>' + masteredAll + '</strong> mastered</span>' +
+                    '<span>Showing <strong>' + filtered.length + '</strong> below</span>' +
+                    '</div>';
+
+                // Render entries
+                if (filtered.length === 0) {
+                    listDiv.innerHTML = '<div class="empty-state"><p>No questions match your filter.</p></div>';
+                    bulkDiv.style.display = 'none';
+                    return;
+                }
+
+                let currentDomain = '';
+                let html = '';
+                filtered.forEach(w => {
+                    // Domain separator
+                    if (w.domain !== currentDomain) {
+                        currentDomain = w.domain;
+                        html += '<div style="font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--brand-400); margin: 1.25rem 0 0.5rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--line-1);">' + currentDomain + '</div>';
+                    }
+
+                    const masteredClass = w.mastered ? ' is-mastered' : '';
+                    const escapedId = (w.id || '').replace(/'/g, "\\'");
+
+                    html += '<div class="manage-item' + masteredClass + '">' +
+                        '<div class="manage-item-header">' +
+                        '<div class="manage-item-meta">' +
+                        '<span class="badge">' + (w.source || 'quiz') + '</span>' +
+                        '<span class="badge">' + (w.difficulty || 'unknown') + '</span>' +
+                        (w.mastered ? '<span class="badge" style="border-color: var(--ok-500); color: var(--ok-500);">Mastered</span>' : '<span class="badge" style="border-color: var(--warn-500); color: var(--warn-500);">Unmastered</span>') +
+                        '<span class="badge">Wrong ' + (w.timesWrong || 1) + 'x</span>' +
+                        (w.lastTested ? '<span class="badge">Last: ' + w.lastTested + '</span>' : '') +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="manage-item-question">' + (w.question || 'No question text') + '</div>' +
+                        '<div class="manage-item-answer">Correct: ' + (w.correct || 'N/A') + '</div>' +
+                        (w.explanation ? '<div style="font-size: 0.8rem; color: var(--text-3); margin-bottom: 0.5rem;">' + w.explanation + '</div>' : '') +
+                        '<div class="manage-item-actions">' +
+                        (w.mastered
+                            ? '<button class="btn btn-secondary btn-sm" onclick="app.markQuestion(\'' + escapedId + '\', false)">Mark Unmastered</button>'
+                            : '<button class="btn btn-success btn-sm" onclick="app.markQuestion(\'' + escapedId + '\', true)">Mark Mastered</button>'
+                        ) +
+                        '<button class="btn btn-danger btn-sm" onclick="app.removeQuestion(\'' + escapedId + '\')">Remove</button>' +
+                        '</div>' +
+                        '</div>';
+                });
+
+                listDiv.innerHTML = html;
+                bulkDiv.style.display = filtered.length > 0 ? 'block' : 'none';
+            }
+
+            markQuestion(wrongId, mastered) {
+                if (this.state.wrongAnswers[wrongId]) {
+                    this.state.wrongAnswers[wrongId].mastered = mastered;
+                    this.saveState();
+                    this.renderManageTab();
+                }
+            }
+
+            removeQuestion(wrongId) {
+                if (this.state.wrongAnswers[wrongId]) {
+                    delete this.state.wrongAnswers[wrongId];
+                    this.saveState();
+                    this.renderManageTab();
+                }
+            }
+
+            bulkMarkMastered() {
+                const domainFilter = document.getElementById('manageDomainFilter').value;
+                const statusFilter = document.getElementById('manageStatusFilter').value;
+                let count = 0;
+
+                Object.keys(this.state.wrongAnswers).forEach(id => {
+                    const w = this.state.wrongAnswers[id];
+                    if (domainFilter !== 'all' && w.domain !== domainFilter) return;
+                    if (statusFilter === 'mastered' && w.mastered) return;
+                    if (statusFilter === 'unmastered' && !w.mastered) {
+                        w.mastered = true;
+                        count++;
+                    } else if (statusFilter === 'all') {
+                        w.mastered = true;
+                        count++;
+                    }
+                });
+
+                this.saveState();
+                this.renderManageTab();
+            }
+
+            bulkRemoveFiltered() {
+                const domainFilter = document.getElementById('manageDomainFilter').value;
+                const statusFilter = document.getElementById('manageStatusFilter').value;
+                const toRemove = [];
+
+                Object.keys(this.state.wrongAnswers).forEach(id => {
+                    const w = this.state.wrongAnswers[id];
+                    if (domainFilter !== 'all' && w.domain !== domainFilter) return;
+                    if (statusFilter === 'unmastered' && w.mastered) return;
+                    if (statusFilter === 'mastered' && !w.mastered) return;
+                    toRemove.push(id);
+                });
+
+                if (toRemove.length === 0) return;
+                if (!confirm('Remove ' + toRemove.length + ' question(s)? This cannot be undone.')) return;
+
+                toRemove.forEach(id => delete this.state.wrongAnswers[id]);
+                this.saveState();
+                this.renderManageTab();
+            }
+
+            clearAllWrongAnswers() {
+                const count = Object.keys(this.state.wrongAnswers).length;
+                if (count === 0) return;
+                if (!confirm('Delete all ' + count + ' wrong answers? This cannot be undone. Consider "Backup to File" first.')) return;
+                this.state.wrongAnswers = {};
+                this.saveState();
+                this.renderManageTab();
+                this.updateRewrongStatus();
+            }
+
+            resetAllProgress() {
+                if (!confirm('This will permanently erase ALL data — quiz history, wrong answers, domain stats, everything. Are you sure?')) return;
+                if (!confirm('Final confirmation: wipe everything and start fresh?')) return;
+                localStorage.removeItem('cissp_state');
+                location.reload();
+            }
+
+            clearHistory() {
+                if (this.state.quizHistory.length === 0) return;
+                if (!confirm('Clear all ' + this.state.quizHistory.length + ' quiz history entries? Your wrong answers and domain stats will be kept.')) return;
+                this.state.quizHistory = [];
+                this.saveState();
+                this.updateHistory();
+            }
+
+            // === End Manage Bank Methods ===
 
             exportState() {
                 const data = JSON.stringify(this.state, null, 2);
