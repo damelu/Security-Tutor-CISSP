@@ -10,10 +10,10 @@ You need two things: the course materials you already have, and a Claude account
 
 ### Step 1 — Copy the course files into this folder
 
-Place these files (from the Student files you received on day one) into the `Student files/` folder:
+If you have bootcamp PDFs/PPTs, place them in `materials/`:
 
 ```
-Student files/
+materials/
 ├── CISSP v9.1 - Practice Exam.pdf
 ├── CISSP v9.1 Practice Exam nightly question numbers.xlsx
 ├── CISSP Q v12-25.pptx
@@ -22,7 +22,17 @@ Student files/
 └── Example sources for obtaining CPE credits.docx
 ```
 
-You should already have all of these from class.
+Then update `CONFIG.md`:
+
+```yaml
+materials_path: "./materials"
+materials_files:
+  - "CISSP v9.1 - Practice Exam.pdf"
+  - "CISSP v9.1 Practice Exam nightly question numbers.xlsx"
+  - "CISSP Q v12-25.pptx"
+```
+
+If you do not have materials, leave `materials_path: null` and the prompts still work (AI-generated questions).
 
 ### Step 2 — Open Claude Cowork
 
@@ -63,10 +73,14 @@ Open `web/index.html` in any browser — no server, no install, no API key. All 
 ### Features
 
 - **Tonight's Study** — pick your day and it quizzes you on all questions for those domains. Choose Practice Exam, PowerPoint, or both.
-- **Re-Quiz Wrong** — filter by domain, auto-selects your weakest areas. Tracks mastery so you stop seeing questions you've nailed.
+- **Re-Quiz Wrong** — filter by domain, auto-selects your weakest areas, and tracks mastery so you stop seeing questions you've nailed.
 - **Custom Quiz** — 240 additional AI-generated questions at 3 difficulty tiers (associate, professional, expert) with CAT-adaptive mode.
-- **Bank Sync** — paste your `WRONG-ANSWER-BANK.md` from Cowork sessions to import wrong answers directly.
+- **Folder Sync** — connect your study folder so wrong answers auto-save to `wrong-answers/[day]/` and append to `WRONG-ANSWER-BANK.md`.
+- **Manage Bank** — filter, mark mastered/unmastered, and clean up imported/stored wrong-answer entries.
+- **Manual Bank Import** — still supported: paste `WRONG-ANSWER-BANK.md` content when importing from outside this web UI.
 - **Source tagging** — every question shows where it came from (Practice Exam PDF Q#, PPT Slide #, or AI-generated).
+
+If imported entries are missing answer options, they remain in your bank but are excluded from Re-Quiz until options are added in **Manage Bank**.
 
 ### Progress saves automatically
 
@@ -104,6 +118,8 @@ The **Backup to File** and **Restore from File** buttons in the top right are on
 CISSP-Study-Kit/
 ├── README.md                ← you're reading this
 ├── AGENTS.md                ← Claude reads this first — file map, boundaries, trace format
+├── CONFIG.md                ← schedule, material paths, transcription/audio settings
+├── QUICKSTART.md            ← 2-minute setup path for first run
 ├── STUDY-GUIDE.md           ← schedule, question lists, domain weights
 ├── DAILY-PROMPT.md          ← the prompt you paste into Claude each night
 ├── REVIEW-PROMPT.md         ← paste this to get re-quizzed on weak spots anytime
@@ -112,18 +128,9 @@ CISSP-Study-Kit/
 ├── web/
 │   └── index.html           ← open in browser — 426 course questions, auto-saves progress
 │
-├── Student files/           ← your course materials go here
-│   ├── CISSP v9.1 - Practice Exam.pdf
-│   ├── CISSP v9.1 Practice Exam nightly question numbers.xlsx
-│   ├── CISSP Q v12-25.pptx
-│   └── (other course files)
-│
-└── Student files/Nightly Notes/
-    ├── Monday/              ← Claude saves all Monday outputs here
-    ├── Tuesday/
-    ├── Wednesday/
-    ├── Thursday/
-    └── Friday/
+├── materials/               ← optional course PDFs/PPTs configured in CONFIG.md
+├── transcripts/             ← optional lecture transcripts (if enabled)
+└── notes/                   ← generated study outputs and audio text
 ```
 
 Each night, Claude auto-generates these files in the day's folder:
@@ -233,7 +240,7 @@ After installing, tell Claude: *"Log me in to NotebookLM"* — Chrome opens for 
 
 ## Optional: Obsidian Integration
 
-If you use Obsidian, there's a vault structure with CISSP domain notes and quiz generation support. See the [generic study kit repo](https://github.com/damelu/Security-Tutor-CISSP) for the Obsidian setup guide — the domain notes work for Training Camp students too.
+If you use Obsidian, this repo includes setup guidance directly in `OBSIDIAN-SETUP.md`.
 
 ---
 
