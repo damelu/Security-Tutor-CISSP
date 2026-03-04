@@ -850,8 +850,17 @@
                 <div class="card">
                     <div class="card-header">Re-Quiz Wrong Answers</div>
                     <div id="rewrongStatus"></div>
+                    <div id="rewrongDomainFilter" style="display:none; margin: 1rem 0;">
+                        <p style="font-weight: 600; margin-bottom: 0.5rem;">Filter by Domain:</p>
+                        <div id="rewrongDomainCheckboxes"></div>
+                        <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary" onclick="app.rewrongSelectAll(true)" style="font-size: 0.85rem; padding: 0.3rem 0.75rem;">Select All</button>
+                            <button class="btn btn-secondary" onclick="app.rewrongSelectAll(false)" style="font-size: 0.85rem; padding: 0.3rem 0.75rem;">Clear All</button>
+                            <button class="btn btn-secondary" onclick="app.rewrongAutoSelect()" style="font-size: 0.85rem; padding: 0.3rem 0.75rem;">Auto-Select Weakest</button>
+                        </div>
+                    </div>
                     <button class="btn btn-primary" onclick="app.startReQuiz()" id="rewrongStartBtn" disabled>
-                        Start Re-Quiz
+                        Start Re-Quiz (<span id="rewrongCount">0</span> questions)
                     </button>
                 </div>
             </div>
@@ -1201,10 +1210,21 @@
             }
 
             startReQuiz() {
-                const wrongIds = Object.keys(this.state.wrongAnswers);
+                const selectedDomains = Array.from(document.querySelectorAll('input[name="rewrongDomain"]:checked')).map(el => el.value);
+                const wrongIds = Object.keys(this.state.wrongAnswers).filter(id => {
+                    const w = this.state.wrongAnswers[id];
+                    return selectedDomains.includes(w.domain) && !w.mastered;
+                });
+
                 if (wrongIds.length === 0) {
-                    alert('No wrong answers to re-quiz yet');
+                    alert('No unmastered wrong answers in the selected domains');
                     return;
+                }
+
+                // Shuffle so order varies each time
+                for (let i = wrongIds.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [wrongIds[i], wrongIds[j]] = [wrongIds[j], wrongIds[i]];
                 }
 
                 this.currentQuiz = {
@@ -1463,17 +1483,94 @@
             updateRewrongStatus() {
                 const wrongIds = Object.keys(this.state.wrongAnswers);
                 const container = document.getElementById('rewrongStatus');
+                const filterDiv = document.getElementById('rewrongDomainFilter');
+                const checkboxDiv = document.getElementById('rewrongDomainCheckboxes');
 
                 if (wrongIds.length === 0) {
                     container.innerHTML = '<p class="text-muted">No wrong answers yet. Complete a quiz first!</p>';
                     document.getElementById('rewrongStartBtn').disabled = true;
-                } else {
-                    const unmastered = wrongIds.filter(id => !this.state.wrongAnswers[id].mastered).length;
-                    container.innerHTML = '<p><strong>Total Wrong Answers:</strong> ' + wrongIds.length + '</p>' +
-                        '<p><strong>Still Learning:</strong> ' + unmastered + '</p>' +
-                        '<p><strong>Mastered:</strong> ' + (wrongIds.length - unmastered) + '</p>';
-                    document.getElementById('rewrongStartBtn').disabled = false;
+                    filterDiv.style.display = 'none';
+                    return;
                 }
+
+                const unmastered = wrongIds.filter(id => !this.state.wrongAnswers[id].mastered);
+                const mastered = wrongIds.length - unmastered.length;
+
+                // Build domain breakdown from wrong answers
+                const domainCounts = {};
+                const domainUnmastered = {};
+                wrongIds.forEach(id => {
+                    const w = this.state.wrongAnswers[id];
+                    const d = w.domain || 'Unknown';
+                    domainCounts[d] = (domainCounts[d] || 0) + 1;
+                    if (!w.mastered) {
+                        domainUnmastered[d] = (domainUnmastered[d] || 0) + 1;
+                    }
+                });
+
+                container.innerHTML = '<p><strong>Total Wrong Answers:</strong> ' + wrongIds.length + '</p>' +
+                    '<p><strong>Still Learning:</strong> ' + unmastered.length + '</p>' +
+                    '<p><strong>Mastered:</strong> ' + mastered + '</p>';
+
+                // Render domain checkboxes with counts
+                filterDiv.style.display = 'block';
+                let cbHtml = '';
+                const sortedDomains = Object.keys(domainCounts).sort((a, b) => (domainUnmastered[b] || 0) - (domainUnmastered[a] || 0));
+                sortedDomains.forEach(domain => {
+                    const total = domainCounts[domain];
+                    const still = domainUnmastered[domain] || 0;
+                    const pct = Math.round((still / total) * 100);
+                    const barColor = pct > 60 ? 'var(--danger)' : pct > 30 ? 'var(--warning)' : 'var(--success)';
+                    cbHtml += '<label style="display: flex; align-items: center; margin-bottom: 0.5rem; cursor: pointer;">' +
+                        '<input type="checkbox" name="rewrongDomain" value="' + domain + '" checked onchange="app.updateRewrongCount()" style="margin-right: 0.5rem;">' +
+                        '<span style="flex: 1;">' + domain + '</span>' +
+                        '<span style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">' +
+                        '<span style="width: 60px; height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden;">' +
+                        '<span style="display:block; width:' + pct + '%; height:100%; background:' + barColor + ';"></span></span>' +
+                        still + ' of ' + total + ' unmastered</span>' +
+                        '</label>';
+                });
+                checkboxDiv.innerHTML = cbHtml;
+
+                this.rewrongAutoSelect();
+                this.updateRewrongCount();
+            }
+
+            rewrongSelectAll(checked) {
+                document.querySelectorAll('input[name="rewrongDomain"]').forEach(cb => cb.checked = checked);
+                this.updateRewrongCount();
+            }
+
+            rewrongAutoSelect() {
+                // Auto-select domains with the most unmastered wrong answers
+                const wrongIds = Object.keys(this.state.wrongAnswers);
+                const domainUnmastered = {};
+                wrongIds.forEach(id => {
+                    const w = this.state.wrongAnswers[id];
+                    if (!w.mastered) {
+                        const d = w.domain || 'Unknown';
+                        domainUnmastered[d] = (domainUnmastered[d] || 0) + 1;
+                    }
+                });
+
+                // Select domains that have at least 1 unmastered, prioritize those with most
+                const sorted = Object.entries(domainUnmastered).sort((a, b) => b[1] - a[1]);
+                const topDomains = sorted.filter(([d, count]) => count > 0).map(([d]) => d);
+
+                document.querySelectorAll('input[name="rewrongDomain"]').forEach(cb => {
+                    cb.checked = topDomains.includes(cb.value);
+                });
+                this.updateRewrongCount();
+            }
+
+            updateRewrongCount() {
+                const selectedDomains = Array.from(document.querySelectorAll('input[name="rewrongDomain"]:checked')).map(el => el.value);
+                const wrongIds = Object.keys(this.state.wrongAnswers).filter(id => {
+                    const w = this.state.wrongAnswers[id];
+                    return selectedDomains.includes(w.domain) && !w.mastered;
+                });
+                document.getElementById('rewrongCount').textContent = wrongIds.length;
+                document.getElementById('rewrongStartBtn').disabled = wrongIds.length === 0;
             }
 
             importBank() {
