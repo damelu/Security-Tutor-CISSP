@@ -99,8 +99,7 @@
         }
 
         .btn-icon {
-            width: 36px;
-            height: 36px;
+            padding: 0.35rem 0.75rem;
             border: 1px solid var(--border);
             background: var(--surface-alt);
             color: var(--text-secondary);
@@ -109,6 +108,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
             transition: all 0.2s;
         }
 
@@ -739,8 +741,8 @@
                 <button class="nav-tab" data-tab="history">History</button>
             </div>
             <div class="nav-actions">
-                <button class="btn-icon" id="exportBtn" title="Export State">📥</button>
-                <button class="btn-icon" id="importBtn" title="Import State">📤</button>
+                <button class="btn-icon" id="exportBtn" title="Save your progress (quiz history, wrong answers, mastery) as a JSON file">Save Progress</button>
+                <button class="btn-icon" id="importBtn" title="Load a previously saved progress file to restore your data">Load Progress</button>
             </div>
         </div>
     </nav>
